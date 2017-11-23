@@ -1,0 +1,22 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<data-set>
+	<!--RGB Color Temp-->
+	<ColorTemp>
+		<RED_GAIN>255</RED_GAIN>
+		<GREEN_GAIN>250</GREEN_GAIN>
+		<BLUE_GAIN>245</BLUE_GAIN>
+	</ColorTemp>
+	<InfoT_TimeOut>
+		<InfotainmentTimeOut>15</InfotainmentTimeOut>
+	</InfoT_TimeOut>
+
+	<lightParam>
+	  <BACKLIGHT_MIN>2</BACKLIGHT_MIN>  <!-- BACKLIGHT_MIN_AT_MINLIGHT -->
+		<BACKLIGHT_MAX>5</BACKLIGHT_MAX>  <!-- BACKLIGHT_MAX_AT_MAXLIGHT -->
+		
+		<AMBIENTLIGHT_MIN>300</AMBIENTLIGHT_MIN>  <!-- MIN_AMBIENT_LIGHT -->
+		<AMBIENTLIGHT_MAX>500</AMBIENTLIGHT_MAX>  <!-- MAX_AMBIENT_LIGHT -->
+
+		<BACKLIGHT_FAULTY_AMBSENS>4</BACKLIGHT_FAULTY_AMBSENS>  <!-- UNKNOW -->
+	</lightParam>
+</data-set>

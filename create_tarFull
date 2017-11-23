@@ -1,0 +1,22 @@
+#!/bin/sh
+cp auto_backlight_bkg/bin/Debug/auto_backlight_bkg www/.
+cp GdsScreenTest/bin/Debug/GdsScreenTest www/.
+cp GdsScreenTest/bin/Debug/GdsScreenTestWrite www/.
+cp GdsGamma/bin/Debug/GdsGamma www/.
+cp NovaCSC/bin/Debug/NovaCSC www/.
+cp GDSBT_iptcom/bin/Debug/GDSBT_iptcom www/.
+cp GDSBT_iptcom/xml/TFT1.car1.lCst_20160812.xml www/.
+cp GdsFlashImage/bin/Debug/GdsFlashImage www/.
+cp POST_UpperLeftSquare/bin/Debug/POST_UpperLeftSquare www/.
+cp GDS_WdtFuncs/bin/Debug/GDS_WdtFuncs www/.
+cp www/AutoRun.sh FlasherScripts/AutoRun.sh_GDS
+cp FlasherScripts/gds_flasher www/.
+cp -r WebPages/cgi-bin www/.
+cp WebPages/full_index.html www/index.html
+
+tar cf www.tar www
+tar cf default_page.tar default_page
+#rm -rf WebPages/cgi-bin
+
+chmod 777 www.tar
+chmod 777 default_page.tar
