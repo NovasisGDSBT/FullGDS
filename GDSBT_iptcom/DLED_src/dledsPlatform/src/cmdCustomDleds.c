@@ -69,14 +69,16 @@ int bash_exec(int len, char *stringcommand, char *dststring);
 
 int getDlAllowed(void)
 {
-    int result = FALSE;
+//int result = FALSE;
+int result = TRUE;
 
-
-  return result;
+    return result;
 }
+
 unsigned int forced_reboot(unsigned int  input)
 {
-   unsigned int result=TRUE;
+   //unsigned int result=TRUE;
+   unsigned int result=FALSE;
 
 
    printf("Function %s \n",__FUNCTION__);
@@ -102,14 +104,14 @@ DLEDS_RESULT dleds_setLinuxDledsTempPath(
     char* filePath)    /* IN/OUT: Path including sub directory */
 {
     DLEDS_RESULT    res = DLEDS_ERROR;
-
+#if 0
     char *          buffer;
     char *          pBuffer = NULL;
     char *          pTmp;
     size_t          result;
     FILE *          pFile;
 
-     printf("Function %s - filePath:%s\n",__FUNCTION__,filePath);
+    printf("Function %s - filePath:%s\n",__FUNCTION__,filePath);
     if (filePath == NULL)
     {
         return res;
@@ -169,22 +171,11 @@ DLEDS_RESULT dleds_setLinuxDledsTempPath(
         res = DLEDS_OK;
         DebugError0("dleds_setLinuxDledsTempPath: ERROR so Use flash file system dir=/");
     }
-
+#endif
+    res = DLEDS_OK;
     return res;
 }
 
-/*
-int main( int argc, char *argv[] )
-{
-
-int len=0;
-
-len=strlen(argv[1]);
-printf("len=%d\n",len );
-bash_exec(len, argv[1]);
-
-  return 0;
-}*/
 
 
 int bash_exec(int len, char *stringcommand, char *dststring)

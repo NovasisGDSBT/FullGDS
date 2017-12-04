@@ -13,6 +13,7 @@
 				<Option compiler="armelfgcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DO_LE" />
 				</Compiler>
 			</Target>
 			<Target title="Release">

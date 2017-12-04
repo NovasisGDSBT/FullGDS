@@ -68,7 +68,7 @@
  * TYPEDEFS
  */
 
-#define STATEMACHINE
+//#define STATEMACHINE
 //#define PRINTCONSOLE
 /*******************************************************************************
  * LOCAL FUNCTION DECLARATIONS
@@ -132,9 +132,12 @@ extern const char *statemachine[15];
  *
  * Globals:         None
  */
+ /* FILIPPO */
+int operationMode = DLEDS_OSRUN_MODE;
+
 int dledsPlatformGetOperationMode(void)
 {
-    int operationMode = DLEDS_UNKNOWN_MODE;
+    //int operationMode = DLEDS_UNKNOWN_MODE;
 
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
@@ -195,8 +198,8 @@ int dledsPlatformGetDlAllowed(void)
  *
  * Globals:         None
  */
-int dledsPlatformForcedReboot(
-    int     rebootReason)           /* IN: Wanted start up mode
+int dledsPlatformForcedReboot(    int     rebootReason)
+                                    /* IN: Wanted start up mode
                                             DLEDS_OSRUN_MODE:
                                                 On restart of the device, operating system
                                                 shall be started in full operational mode.
@@ -208,8 +211,9 @@ int dledsPlatformForcedReboot(
                                                 download services is started.
                                     */
 {
-    int result = DLEDS_ERROR;
-
+    int result = DLEDS_OK;
+    operationMode  = rebootReason;
+    #if 0
 
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
@@ -252,7 +256,7 @@ int dledsPlatformForcedReboot(
     /*****************************************************************************
     *   ADD CODE FOR PLATFORM (END)
     ******************************************************************************/
-
+    #endif
     return result;
 }
 
@@ -369,7 +373,8 @@ DLEDS_RESULT dledsPlatformFtp(
     strcat(destFile, "/");
     strcat(destFile, sessionData.requestInfo.fileName);
     /* Prepare FTP command */
-    strcpy(ftpCommand, "ftpget -u anonymous -p anonymous ");
+    //strcpy(ftpCommand, "ftpget -u anonymous -p anonymous ");
+    strcpy(ftpCommand, "ftpget -u Anonymous ");
     strcat(ftpCommand, ipAddrStr);
     strcat(ftpCommand, " ");
     strcat(ftpCommand, destFile);
@@ -454,7 +459,7 @@ DLEDS_RESULT dledsPlatformSetDledsTempPath(
     if (result == DLEDS_ERROR)
     {
         /* Use flash file system for temporary DLEDS directory */
-        strcpy(dledsDirectoryPath, FILE_SYSTEM_NAME);
+        strcpy(dledsDirectoryPath, DLEDS_ROOT_DIRECTORY);
         result = DLEDS_OK;
         DebugError0("dledsPlatformSetDledsTempPath: ERROR so Use flash file system dir=/");
     }
@@ -536,11 +541,16 @@ UINT32 dledsPlatformCalculateFreeDiskSpace(
  *
  * Globals:       -
  */
+
+char dststring[RESULTBASH_SIZESTRING];
+int  blen;
+
 DLEDS_RESULT dledsPlatformGetSwInfoXml(
     UINT32  *pActSize,          /* OUT: Pointer to buffer size */
     char    **ppInfoBuffer)     /* OUT: Pointer to buffer pointer */
 {
     DLEDS_RESULT    result = DLEDS_ERROR;
+    FILE    *fp;
 
     if ((pActSize == NULL) && (ppInfoBuffer == NULL))
     {
@@ -549,22 +559,28 @@ DLEDS_RESULT dledsPlatformGetSwInfoXml(
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
     ******************************************************************************/
-    #ifdef PRINTCONSOLE
+    //#ifdef PRINTCONSOLE
     printf("Function %s \n",__FUNCTION__);
-    #endif
-
+    //#endif
+/*
     char dststring[RESULTBASH_SIZESTRING];
     int len=0;
-
+    */
+    /* FILIPPO */
     memset (dststring,'\0',RESULTBASH_SIZESTRING);
 
+    fp = fopen("/tmp/DledsHwSw.xml","r");
+    if (fp == NULL)
+        return DLEDS_ERROR;
+    blen = fread(dststring,1,RESULTBASH_SIZESTRING,fp)  ;
+    fclose(fp);
 
+    *ppInfoBuffer = dststring;
+    *pActSize = blen;
 
-    len=strlen("ls -l");  // xml for SW info
-    if(bash_exec(len,"ls -l", dststring)==0)
-    {
-         result = DLEDS_OK;
-    }
+    printf("len = %d\n%s\n",*pActSize,*ppInfoBuffer);
+    result = DLEDS_OK;
+    /**/
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (END)
     ******************************************************************************/
@@ -587,6 +603,7 @@ DLEDS_RESULT dledsPlatformGetHwInfoXml(
     char    **ppInfoBuffer)     /* OUT: Pointer to buffer pointer */
 {
     DLEDS_RESULT    result = DLEDS_ERROR;
+    FILE    *fp;
 
     if ((pActSize == NULL) && (ppInfoBuffer == NULL))
     {
@@ -596,22 +613,25 @@ DLEDS_RESULT dledsPlatformGetHwInfoXml(
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
     ******************************************************************************/
-    #ifdef PRINTCONSOLE
+    //#ifdef PRINTCONSOLE
     printf("Function %s \n",__FUNCTION__);
-    #endif
+    //#endif
 
-    char dststring[RESULTBASH_SIZESTRING];
-    int len=0;
-
+    /* FILIPPO */
     memset (dststring,'\0',RESULTBASH_SIZESTRING);
 
+    fp = fopen("/tmp/HWRev.xml","r");
+    if (fp == NULL)
+        return DLEDS_ERROR;
+    blen = fread(dststring,1,RESULTBASH_SIZESTRING,fp)  ;
+    fclose(fp);
 
+    *ppInfoBuffer = dststring;
+    *pActSize = blen;
 
-    len=strlen("ls -l");  // xml for HW info
-    if(bash_exec(len,"ls -l", dststring)==0)
-    {
-         result = DLEDS_OK;
-    }
+    printf("len = %d\n%s\n",*pActSize,*ppInfoBuffer);
+    result = DLEDS_OK;
+    /**/
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (END)
     ******************************************************************************/
@@ -641,10 +661,10 @@ void dledsPlatformReleaseInfoXml(
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
     ******************************************************************************/
-    #ifdef PRINTCONSOLE
+    //#ifdef PRINTCONSOLE
     printf("Function %s \n",__FUNCTION__);
-    #endif
-
+    //#endif
+/*
    char dststring[RESULTBASH_SIZESTRING];
     int len=0;
 
@@ -654,6 +674,7 @@ void dledsPlatformReleaseInfoXml(
 
     len=strlen("ls -l");  // xml for HW and SW info
     bash_exec(len,"ls -l", dststring);
+    */
 
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (END)
@@ -673,12 +694,13 @@ void dledsPlatformReleaseInfoXml(
  *
  * Globals:       -
  */
+ /* FILIPPO */
 DLEDS_RESULT dledsPlatformGetHwInfo(
     char* unit_type,            /* OUT: Pointer to unit type string (16 characters, including '\0') */
     char* serial_number,        /* OUT: Pointer to serial number string (16 characters, including '\0') */
     char* delivery_revision)    /* OUT: Pointer to delivered revision (16 characters, including '\0') */
 {
-    DLEDS_RESULT    result = DLEDS_ERROR;
+    DLEDS_RESULT    result = DLEDS_OK;
 
     if ((unit_type == NULL) || (serial_number == NULL) || (delivery_revision == NULL))
     {
@@ -686,9 +708,9 @@ DLEDS_RESULT dledsPlatformGetHwInfo(
     }
 
     /* Initiate output variables to empty string */
-    strcpy(unit_type, "");
-    strcpy(serial_number, "");
-    strcpy(delivery_revision, "");
+    strcpy(unit_type, "Lcd");
+    strcpy(serial_number, "12345678");
+    strcpy(delivery_revision, "1.0.0");
 
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
@@ -826,7 +848,7 @@ DLEDS_RESULT dledsPlatformCreateSubDirectory(
 DLEDS_RESULT dledsPlatformCleanupEDSP2(
     char* edspName)         /* IN: EDSP to be removed from target */
 {
-    DLEDS_RESULT        result = DLEDS_ERROR;
+    DLEDS_RESULT        result = DLEDS_OK;
 
     if (edspName == NULL)
     {
@@ -955,24 +977,27 @@ DLEDS_RESULT dledsPlatformRemovePackages(
 DLEDS_RESULT dledsPlatformInstallDlu2(
     TYPE_DLEDS_DLU_DATA2* pDluData)  /*  IN: Pointer to DLU file info */
 {
-    DLEDS_RESULT            result = DLEDS_ERROR;
+    DLEDS_RESULT  result = DLEDS_OK;
+    char    cmd[255];
 
     if (pDluData == NULL)
     {
+        printf("DLEDS_ERROR %s \n",__FUNCTION__);
         return DLEDS_ERROR;
     }
 
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
     ******************************************************************************/
-    #ifdef PRINTCONSOLE
-    printf("Function %s \n",__FUNCTION__);
-    #endif
+    //#ifdef PRINTCONSOLE
+    printf("Function %s, file is %s/%s\n",__FUNCTION__, pDluData->dluFilePath, pDluData->dluFileName);
+    sprintf(cmd,"cp %s/%s /tmp/downloaded_file\n",pDluData->dluFilePath, pDluData->dluFileName);
+    system(cmd);
+    //#endif
 
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (END)
     ******************************************************************************/
-
     return result;
 }
 
@@ -1002,9 +1027,9 @@ DLEDS_RESULT dledsPlatformInstallDlu(
     /******************************************************************************
     *   ADD CODE FOR PLATFORM (START)
     ******************************************************************************/
-    #ifdef PRINTCONSOLE
+    //#ifdef PRINTCONSOLE
     printf("Function %s \n",__FUNCTION__);
-    #endif
+    //#endif
     /******************************************************************************
     Install payload data from DLU file on target
     ******************************************************************************/
@@ -1047,59 +1072,55 @@ DLEDS_RESULT dledsPlatformUnpackTarFile(
 
     if ((fileName == NULL) && (destinationDir == NULL))
     {
-        result = DLEDS_ERROR;
+        printf("%s : fileName == NULL destinationDir == NULL\n",__FUNCTION__);
+        return DLEDS_ERROR;
     }
     else
     {
         /******************************************************************************
-    *   ADD CODE FOR PLATFORM (START)
-    ******************************************************************************/
-    #ifdef PRINTCONSOLE
-    printf("Function %s \n",__FUNCTION__);
-    #endif
+        *   ADD CODE FOR PLATFORM (START)
+        ******************************************************************************/
+        #ifdef PRINTCONSOLE
+        printf("Function %s \n",__FUNCTION__);
+        #endif
+        system ("cp -r /dleds /tmp/dledsdwnld\n");
 
-    (void)compressed; /* To avoid compiler warning */
+        (void)compressed; /* To avoid compiler warning */
 
-    /******************************************************************************
-    Unpack TAR file to destination directory
-    ******************************************************************************/
-    DebugError2("***PLATFORM: Unpack TAR file(%s) in directory (%s)", fileName, destinationDir);
-    DebugError1("***PLATFORM: TAR file compressed flag is (%d)", compressed);
-   char            tarCommand[256];
-    int             sysResult;
+        /******************************************************************************
+        Unpack TAR file to destination directory
+        ******************************************************************************/
+        DebugError2("***PLATFORM: Unpack TAR file(%s) in directory (%s)", fileName, destinationDir);
+        DebugError1("***PLATFORM: TAR file compressed flag is (%d)", compressed);
+        char            tarCommand[256];
+        int             sysResult;
 
-    /* Add destination directory to tar command */
-    strcpy(tarCommand, "tar -C ");
-    strcat(tarCommand, destinationDir);
+        /* Add destination directory to tar command */
+        strcpy(tarCommand, "tar -C ");
+        strcat(tarCommand, destinationDir);
 
-    /* Check if TAR file is compressed */
-    if (compressed == 1)
-    {
-        strcat(tarCommand, " -xzvf ");
+        /* Check if TAR file is compressed */
+        if (compressed == 1)
+        {
+            strcat(tarCommand, " -xzvf ");
+        }
+        else
+        {
+            strcat(tarCommand, " -xvf ");
+        }
+
+        strcat(tarCommand, fileName);
+        sysResult = system(tarCommand);
+        if (sysResult != 0)
+        {
+            DebugError2("Tar command failed (%s) returned (%d)", tarCommand, sysResult);
+            result = DLEDS_ERROR;
+        }
+        remove(fileName);
+        /******************************************************************************
+        *   ADD CODE FOR PLATFORM (END)
+        ******************************************************************************/
     }
-    else
-    {
-        strcat(tarCommand, " -xvf ");
-    }
-
-    strcat(tarCommand, fileName);
-    sysResult = system(tarCommand);
-    if (sysResult != 0)
-    {
-        DebugError2("Tar command failed (%s) returned (%d)", tarCommand, sysResult);
-        result = DLEDS_ERROR;
-    }
-
-    /******************************************************************************
-    *   ADD CODE FOR PLATFORM (END)
-    ******************************************************************************/
-
-
-    remove(fileName);
-
-    }
-
-
     return result;
 }
 
@@ -1636,7 +1657,7 @@ void dleds_thread(void)
         /* This is the directory used by the LOG function and */
         /* possibly as root for DLEDS temporary directory. Do */
         /* not continue */
-        printf("dleds_thread - createSubDirectory ERROR\n");
+        printf("dleds_thread - createSubDirectory %s ERROR\n",DLEDS_ROOT_DIRECTORY);
         sleep(5);
         return;
     }
@@ -2010,10 +2031,10 @@ void dleds_thread(void)
                        the first message in RUN mode as a re-send of STATUS message */
                     dleds_sendEchoMessage();
                     DLEDS_STATE = INITIALIZED;
-                    IPTVosTaskDelay(2000);
+                    //IPTVosTaskDelay(2000);
                     dleds_resetToRunMode();
                     DebugError0("Wait for reset to strike");
-                    IPTVosTaskDelay(10000);
+                    //IPTVosTaskDelay(10000);
                 }
                 else
                 {
@@ -2025,7 +2046,7 @@ void dleds_thread(void)
                     DLEDS_STATE = INITIALIZED;
                     dleds_resetToDownloadMode();
                     DebugError0("Wait for reset to strike");
-                    IPTVosTaskDelay(10000);
+                    //IPTVosTaskDelay(10000);
                 }
                 break;
             }

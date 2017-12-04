@@ -461,7 +461,7 @@
 
 1441207064 /Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsCommon/inc/dledsInstall.h
 
-1492016414 /Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsPlatform/inc/dledsPlatform.h
+1511966644 /Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsPlatform/inc/dledsPlatform.h
 	"iptcom.h"
 	"vos.h"
 	"dledsPlatformDefines.h"
@@ -481,7 +481,7 @@
 
 1424096084 /Devel/NOVAsom6_SDK/FileSystem/ChromeFs/output/staging/usr/include/bits/semaphore.h
 
-1492692361 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsCommon/src/dledsInstall.c
+1511958311 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsCommon/src/dledsInstall.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -499,7 +499,7 @@
 
 1444892252 /Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsCommon/inc/dleds_icd.h
 
-1475071808 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsCommon/src/dledsServer.c
+1511970042 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsCommon/src/dledsServer.c
 	<stdio.h>
 	<stdlib.h>
 	"iptcom.h"
@@ -530,7 +530,7 @@
 	"dleds.h"
 	"dledsXml.h"
 
-1492019072 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsPlatform/src/cmdCustomDleds.c
+1511967117 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsPlatform/src/cmdCustomDleds.c
 	<stdio.h>
 	<stdlib.h>
 	"dleds.h"
@@ -899,7 +899,7 @@
 
 1424096068 /Devel/NOVAsom6_SDK/FileSystem/ChromeFs/output/staging/usr/include/bits/math-finite.h
 
-1504525850 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsPlatform/src/dledsPlatform.c
+1511971582 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/DLED_src/dledsPlatform/src/dledsPlatform.c
 	<stdio.h>
 	<stdlib.h>
 	"dleds.h"
@@ -910,4 +910,21 @@
 	"dledsDbg.h"
 	"dledsCrc32.h"
 	"dledsPlatform.h"
+
+1508410603 source:/Devel/NOVAsom6_SDK/GdsPages/GdsPages/GDSBT_iptcom/IPTCOM_src/GDSBT_iptcom.c
+	<string.h>
+	<stdlib.h>
+	<signal.h>
+	<string.h>
+	"iptcom.h"
+	"vos.h"
+	"vos_priv.h"
+	"mdcom_priv.h"
+	"iptcom_priv.h"
+	"PIS_Common.h"
+	"PIS_App.h"
+	"PIS_Diag.h"
+	"PIS_IptCom.h"
+	<SDL/SDL.h>
+	<SDL/SDL_gfxPrimitives.h>
 

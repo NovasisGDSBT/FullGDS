@@ -106,7 +106,7 @@ static UINT32 localRequestFileCrc = 0;
 /*
  * This variable is initiated with the name of the file that saves session
  * information before reset to download
- */    
+ */
 char DLEDS_TEMP_STORAGE_FILE_NAME[128] = DLEDS_STORAGE_FILE_NAME;
 
 UINT8 localRequest = FALSE;
@@ -129,7 +129,7 @@ PD_HANDLE pdHandle;
  */
 
 /*******************************************************************************
- * 
+ *
  * Function name:   dleds_get_operation_mode
  *
  * Abstract:        This function evaluates the operation mode in which the
@@ -153,7 +153,7 @@ PD_HANDLE pdHandle;
  *                      software packages have been started, but application
  *                      software startup is intentionally blocked.
  *
- * Globals:         None      
+ * Globals:         None
  */
 static int dleds_get_operation_mode( void )
 {
@@ -166,7 +166,7 @@ static int dleds_get_operation_mode( void )
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name:   dleds_getDlAllowed
  *
  * Abstract:        This function retrieves the actual state of the
@@ -175,7 +175,7 @@ static int dleds_get_operation_mode( void )
  * Return value:    FALSE:  Download is not allowed
  *                  TRUE:   Download is allowed
  *
- * Globals:         None      
+ * Globals:         None
  */
 static int dleds_getDlAllowed(void)
 {
@@ -188,7 +188,7 @@ static int dleds_getDlAllowed(void)
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name:   dleds_forced_reboot
  *
  * Abstract:        This function shall perform a reboot of the device to
@@ -196,21 +196,21 @@ static int dleds_getDlAllowed(void)
  *
  * Return value:    On success there is no return from this routine as the target
  *                  device will perfom the reset within this function.
- *                  DLEDS_ERROR: Failed to reset device   
+ *                  DLEDS_ERROR: Failed to reset device
  *
- * Globals:         None      
+ * Globals:         None
  */
 static int dleds_forced_reboot(
     int     rebootReason)           /* IN: Wanted start up mode
                                             DLEDS_OSRUN_MODE:
-                                                On restart of the device, operating system 
-                                                shall be started in full operational mode. 
-                                 
+                                                On restart of the device, operating system
+                                                shall be started in full operational mode.
+
                                             DLEDS_OSDOWNLOAD_MODE:
-                                                On restart of the device, operating system 
+                                                On restart of the device, operating system
                                                 shall be started in download mode, where
                                                 some software required for application software
-                                                download services is started.                                                                                   
+                                                download services is started.
                                     */
 {
     int result = DLEDS_ERROR;
@@ -223,16 +223,16 @@ static int dleds_forced_reboot(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name:   dleds_getAppMode
  *
  * Abstract:        This function shall get the global variables
  *                  EnddeviceMode and ConfigStatus from the system.
  *
- * Return value:    DLEDS_OK: operation successfull                                           
- *                  DLEDS_ERROR: operation encountered an error                                         
+ * Return value:    DLEDS_OK: operation successfull
+ *                  DLEDS_ERROR: operation encountered an error
  *
- * Globals:         None      
+ * Globals:         None
  */
 static int dleds_getAppMode(
     int*    IEdMode,            /* IN/OUT: Value for the enddevice mode
@@ -259,13 +259,13 @@ static int dleds_getAppMode(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_handleStatusRequests
  *
- * Abstract:      This function handles the two versions of status requests. 
+ * Abstract:      This function handles the two versions of status requests.
  *                Version 1 is sent with ComID 272 and version 2 is sent with
  *                ComID 278. They should both use version 1.0.0.0 of the data set
- *                EDReqStatus. 
+ *                EDReqStatus.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -282,11 +282,11 @@ static DLEDS_RESULT dleds_handleStatusRequests(
     DLEDS_RESULT    result = DLEDS_ERROR;
     INT32           iptResult;
     EDReqStatus*    pReqStatus;
-    UINT8           topoCounter = 0; 
-    UINT32          ownIpAddress;   
-    char            tempSrcUri[102];   
-    char            srcUri[102];   
-     
+    UINT8           topoCounter = 0;
+    UINT32          ownIpAddress;
+    char            tempSrcUri[102];
+    char            srcUri[102];
+
     /* Verify that input parameters are valid */
     if ((pMsgInfo == NULL) || (pReqData == NULL) ||
         (reqDataSize != sizeof(EDReqStatus)) || (pPdBuffer == NULL))
@@ -314,25 +314,25 @@ static DLEDS_RESULT dleds_handleStatusRequests(
             /* Convert own IP address to URI string to be used as source URI */
             ownIpAddress = IPTCom_getOwnIpAddr();
             DebugError1("Own IP address to be converted to URI (0x%x)", ownIpAddress);
-            topoCounter = 0;                 
+            topoCounter = 0;
             iptResult = IPTCom_getUriHostPart(
                 ownIpAddress,      /* IP address */
                 tempSrcUri,        /* Pointer to resulting URI */
                 &topoCounter);     /* Topo counter */
             strcpy(srcUri,"DLEDService@");
-            strcat(srcUri,tempSrcUri); 
+            strcat(srcUri,tempSrcUri);
 
             if (pMsgInfo->comId == iEDReqStatus2)
             {
                 /* Use communication protocol version 2 */
                 sessionData.protocolVersion = DLEDS_PROTOCOL_VERSION_2;
             }
-            else         
+            else
             {
                 /* Use communication protocol version 1 */
                 sessionData.protocolVersion = DLEDS_PROTOCOL_VERSION_1;
             }
-    
+
             if (sessionData.protocolVersion == DLEDS_PROTOCOL_VERSION_1)
             {
                 iptResult = MDComAPI_putRespMsg(
@@ -385,14 +385,14 @@ static DLEDS_RESULT dleds_handleStatusRequests(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_handleSendFileRequests
  *
- * Abstract:      This function handles three versions of send file requests. 
+ * Abstract:      This function handles three versions of send file requests.
  *                The one with a fixed size array (ComID= 850), the one with
  *                a variable sized array (ComID= 852) and the one with a fixed
  *                size array (ComID= 276). The first two should both use version
- *                2.0.0.0 of the data set EDReqStatus. 
+ *                2.0.0.0 of the data set EDReqStatus.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -418,11 +418,13 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         DebugError0("Invalid input parameters to function dleds_handleSendFileRequests()");
         DebugError1("    pMsgInfo= 0x%X", pMsgInfo);
         DebugError1("    pReqData= 0x%X", pReqData);
-        DebugError1("    reqDataSize= 0x%X", reqDataSize); 
+        DebugError1("    reqDataSize= 0x%X", reqDataSize);
         result = DLEDS_ERROR;
     }
     else
     {
+        printf("Handle received download request message\n");
+
         /* Handle received download request message */
         sessionData.downloadResetReason = DLEDS_DOWNLOAD;
         if (pMsgInfo->comId == iEDReqSendFile2)
@@ -430,7 +432,7 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
             /* Use communication protocol version 2 during download */
             sessionData.protocolVersion = DLEDS_PROTOCOL_VERSION_2;
         }
-        else         
+        else
         {
             /* Use communication protocol version 1 during download */
             sessionData.protocolVersion = DLEDS_PROTOCOL_VERSION_1;
@@ -440,7 +442,7 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         sessionData.srcIpAddress = pMsgInfo->srcIpAddr;
         strcpy(sessionData.srcUri,pMsgInfo->srcURI);
         sessionData.requestReceiveTime = IPVosGetSecTimer();
-    
+
         pReqSendFile = (MCGReqSendFile*) pReqData;
         sessionData.requestInfo.transactionId = pReqSendFile->transactionId;
         strcpy(sessionData.requestInfo.fileName, pReqSendFile->fileName);
@@ -469,9 +471,11 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         {
             /* Flag that the file type is not supported */
             invalidFileType = TRUE;
+            printf("File type is not supported\n");
+
         }
 
-        /* Local request will get source IP address 127.0.0.1 */            
+        /* Local request will get source IP address 127.0.0.1 */
         if ( sessionData.srcIpAddress == 0x7f000001 )
         {
             localRequest = TRUE;
@@ -490,22 +494,24 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
                 (localRequestFileCrc != sessionData.requestInfo.fileCRC)) )
             {
                 /* This is a new local request */
-                localRequestInProgress = FALSE; 
+                localRequestInProgress = FALSE;
                 sessionData.localTransfer = FALSE;
             }
-        }            
+        }
         else
         {
             localRequestInProgress = FALSE;
             sessionData.localTransfer = FALSE;
-        }            
+        }
 
         /* Do not check Download allowed if this is a local request */
         if ( (localRequestInProgress == FALSE) && (dleds_getDlAllowed() == FALSE) )
         {
             DebugError0("Download not allowed");
+            printf("Download not allowed\n");
+
             appResultCode = DL_NOT_ALLOWED;
-            /* 
+            /*
             * Make sure that response message is sent.
             * Error code should be sent in this case
             */
@@ -519,20 +525,20 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
             DebugError1("Version (0x%x) of request message not supported",
                 pReqSendFile->appVersion);
             appResultCode = DL_INCOMPATIBLE_VERSION;
-            * 
+            *
             * Make sure that response message is sent.
             * Error code should be sent in this case
             *
             result = DLEDS_OK;
         }
         */
-        else if ( (localRequestInProgress == FALSE) && 
+        else if ( (localRequestInProgress == FALSE) &&
                 (CFavailable == 1) &&
                 (dleds_diskSpaceAvailable(dledsTempDirectory, pReqSendFile->fileSize) == DLEDS_ERROR) )
         {
             DebugError1("dleds_handleSendFileRequests: Not enought disk space, filesize is %d kByte", pReqSendFile->fileSize);
             appResultCode = DL_DISK_FULL;
-            /* 
+            /*
             * Make sure that response message is sent.
             * Error code should be sent in this case
             */
@@ -541,8 +547,9 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         else if ( pReqSendFile->transactionId == 0)
         {
             DebugError0("Transaction ID = 0 is not accepted");
+            printf("Transaction ID = 0 is not accepted");
             appResultCode = DL_PARAM_ERROR;
-            /* 
+            /*
             * Make sure that response message is sent.
             * Error code should be sent in this case
             */
@@ -551,8 +558,9 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         else if ( dleds_validFqdn(pReqSendFile->fileServerHostName) != Valid )
         {
             DebugError1("FileServerHostName is not a FQDN (%s)", pReqSendFile->fileServerHostName);
+            printf("FileServerHostName is not a FQDN (%s)", pReqSendFile->fileServerHostName);
             appResultCode = DL_URI_ERROR;
-            /* 
+            /*
             * Make sure that response message is sent.
             * Error code should be sent in this case
             */
@@ -561,8 +569,9 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         else if (invalidFileType == TRUE)
         {
             DebugError1("File type not supported (%s)", sessionData.requestInfo.fileName);
+            printf("File type not supported (%s)", sessionData.requestInfo.fileName);
             appResultCode = DL_REQUEST_FAILED;
-            /* 
+            /*
             * Make sure that response message is sent.
             * Error code should be sent in this case
             */
@@ -571,6 +580,8 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
         else
         {
             appResultCode = DL_OK;
+            printf("DL_OK\n");
+
             sessionData.transferInProgress = TRUE;
             result = dleds_writeStorageFile(&sessionData);
             if (result == DLEDS_OK)
@@ -578,28 +589,28 @@ static DLEDS_RESULT dleds_handleSendFileRequests(
                 appResultCode = DL_OK;
             }
             else
-            {   
+            {
                 /* Failed to write session data to temp storage file */
                 appResultCode = DL_DISK_ERROR;
-                /* 
+                /*
                 * Make sure that resonse message is sent.
                 * Error code should be sent in this case
                 */
                 result = DLEDS_OK;
             }
-        }            
+        }
     }
     return result;
 }
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_handleVersionInfoRequest
  *
  * Abstract:      This function handles the Version Info request. Requested
  *                version info, HW or SW, is retrieved from and sent in
- *                the response message. 
+ *                the response message.
  *
  * Return value:  DLEDS_EDSTATUS    This request has been handled, Wait for next request
  *
@@ -619,10 +630,10 @@ static DLEDS_RESULT dleds_handleVersionInfoRequest(
     char*               pDataSet = NULL;
     UINT32              dataSetSize = 0;
     EDRepVersionInfo    repVersionInfo;
-    UINT8               topoCounter = 0; 
-    UINT32              ownIpAddress;   
-    char                tempSrcUri[102];   
-    char                srcUri[102];   
+    UINT8               topoCounter = 0;
+    UINT32              ownIpAddress;
+    char                tempSrcUri[102];
+    char                srcUri[102];
     EDRepVersionInfo*   pTemp;
 
     /* Verify that input parameters are valid */
@@ -631,7 +642,7 @@ static DLEDS_RESULT dleds_handleVersionInfoRequest(
         DebugError0("Invalid input parameters to function dleds_handleCleanUpRequest()");
         DebugError1("    pMsgInfo= 0x%X", pMsgInfo);
         DebugError1("    pReqData= 0x%X", pReqData);
-        DebugError2("    reqDataSize= 0x%X, expected value= 0x%X", reqDataSize, sizeof(EDReqVersionInfo)); 
+        DebugError2("    reqDataSize= 0x%X, expected value= 0x%X", reqDataSize, sizeof(EDReqVersionInfo));
         result = DLEDS_EDSTATUS;
     }
     else
@@ -677,13 +688,13 @@ static DLEDS_RESULT dleds_handleVersionInfoRequest(
             /* Convert own IP address to URI string to be used as source URI */
             ownIpAddress = IPTCom_getOwnIpAddr();
             DebugError1("Own IP address to be converted to URI (0x%x)", ownIpAddress);
-            topoCounter = 0;                 
+            topoCounter = 0;
             iptResult = IPTCom_getUriHostPart(
                 ownIpAddress,      /* IP address */
                 tempSrcUri,        /* Pointer to resulting URI */
                 &topoCounter);     /* Topo counter */
             strcpy(srcUri,"DLEDService@");
-            strcat(srcUri,tempSrcUri); 
+            strcat(srcUri,tempSrcUri);
 
 
             /* Prepare dataset for response message */
@@ -721,7 +732,7 @@ static DLEDS_RESULT dleds_handleVersionInfoRequest(
                     repVersionInfo.versionInfolength = 0;
                     pDataSet = (char*) &repVersionInfo;
                 }
-                /* Buffer allocated no longer needed */ 
+                /* Buffer allocated no longer needed */
                 if (pVersionInfoBuffer != NULL)
                 {
                     dledsPlatformReleaseInfoXml(pVersionInfoBuffer);
@@ -762,17 +773,17 @@ static DLEDS_RESULT dleds_handleVersionInfoRequest(
                 /*    */
                 DebugError1("MDComAPI_putRespMsg() failed with error (%d)",
                     iptResult);
-                /* 
-                * forget this request, 
+                /*
+                * forget this request,
                 * wait for the next request
                 */
                 result = DLEDS_EDSTATUS;
             }
-            
+
             if (dataSetAllocated == 1)
             {
                 free(pDataSet);
-            } 
+            }
         }
     }
     return result;
@@ -780,15 +791,15 @@ static DLEDS_RESULT dleds_handleVersionInfoRequest(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_sendProgressRequest
  *
- * Abstract:      This function sends the progress request message.  
+ * Abstract:      This function sends the progress request message.
  *
  * Return value:  DLEDS_OK      - Progress message is sent successfully
  *                DLEDS_ERROR   - Failure when
  *                                Creating own URI string
- *                                Error from IPTCom when sending message 
+ *                                Error from IPTCom when sending message
  *
  * Globals:       sessionData
  *                progressQueueId
@@ -805,10 +816,10 @@ DLEDS_RESULT dleds_sendProgressRequest(
     int                 iptResult = IPT_OK;
     EDReqDLProgress     data;
     char                destUri[102];
-    char                srcUri[102];   
-    char                tempSrcUri[102];   
-    UINT8               topoCounter = 0; 
-    UINT32              ownIpAddress;   
+    char                srcUri[102];
+    char                tempSrcUri[102];
+    UINT8               topoCounter = 0;
+    UINT32              ownIpAddress;
 
     memset(&data, 0, sizeof(data));
     data.appVersion = EDReqDLProgress_appVersion;
@@ -817,7 +828,7 @@ DLEDS_RESULT dleds_sendProgressRequest(
     data.requestReset = requestReset;
     data.resetTimeout = resetTimeout;
     data.errorCode = errorCode;
-    
+
     if (infoText != NULL)
     {
         strncpy(data.infoText, infoText, EDReqDLProgress_InfoTextSize);
@@ -828,12 +839,12 @@ DLEDS_RESULT dleds_sendProgressRequest(
     }
 
     /* Use source URI from the latest request message received from the tool
-       as destination URI for progress message */ 
+       as destination URI for progress message */
     strcpy(destUri,sessionData.srcUri);
-    
+
     /* Convert own IP address to URI string to be used as source URI */
     ownIpAddress = IPTCom_getOwnIpAddr();
-    topoCounter = 0;                 
+    topoCounter = 0;
     iptResult = IPTCom_getUriHostPart(
                     ownIpAddress,      /* IP address */
                     tempSrcUri,        /* Pointer to resulting URI */
@@ -896,15 +907,15 @@ DLEDS_RESULT dleds_sendProgressRequest(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_waitForProgressResponse
  *
  * Abstract:      This function waits for the progress response message. The
  *                message contains information if request in progress should
- *                be aborted or continue.  
+ *                be aborted or continue.
  *
  * Return value:  DLEDS_OK      - Response message is received successfully
- *                DLEDS_ERROR   - 
+ *                DLEDS_ERROR   -
  *
  * Globals:       progressQueueId
  */
@@ -920,28 +931,28 @@ DLEDS_RESULT dleds_waitForProgressResponse(
     UINT32              size;
     MSG_INFO            msgInfo;
     char*               pRecBuf;
-    EDRepDLProgress*    pRepDLprogress; 
+    EDRepDLProgress*    pRepDLprogress;
 
     if (abortRequest == NULL)
     {
         return DLEDS_ERROR;
     }
-    
+
     pRecBuf = NULL;  /* Use IPTCom allocated buffer */
     size = 0;
-        
+
     iptResult = MDComAPI_getMsg(
             progressQueueId,    /* Queue ID */
             &msgInfo,           /* Message info */
-            &pRecBuf,           /* Pointer to pointer to data 
+            &pRecBuf,           /* Pointer to pointer to data
                                     buffer */
             &size,              /* Pointer to size. Size shall
                                     be set to own buffer size at
                                     the call. The IPTCom will
-                                    return the number of received 
+                                    return the number of received
                                     bytes */
             IPT_WAIT_FOREVER);  /* Wait for result */
-            
+
     if (iptResult == MD_QUEUE_NOT_EMPTY)
     {
         if (msgInfo.msgType == MD_MSGTYPE_RESPONSE )
@@ -961,7 +972,7 @@ DLEDS_RESULT dleds_waitForProgressResponse(
             }
             else
             {
-                /* Response message contains status on abortRequest */   
+                /* Response message contains status on abortRequest */
                 *abortRequest = pRepDLprogress->abortRequest;
                 result = DLEDS_OK;
             }
@@ -990,7 +1001,7 @@ DLEDS_RESULT dleds_waitForProgressResponse(
         *abortRequest = PROGRESS_CONTINUE;
         result = DLEDS_ERROR;
     }
-    
+
     if (pRecBuf != NULL)
     {
         iptResult = MDComAPI_freeBuf(pRecBuf);
@@ -998,7 +1009,7 @@ DLEDS_RESULT dleds_waitForProgressResponse(
         {
             /* error */
             DebugError1("MDComAPI_freeBuf returns error code (%d)", iptResult);
-        } 
+        }
     }
 
     return result;
@@ -1006,11 +1017,11 @@ DLEDS_RESULT dleds_waitForProgressResponse(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_reportProgress
  *
  * Abstract:      This function sends the progress request message and waits
- *                for the response message. 
+ *                for the response message.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1028,14 +1039,14 @@ DLEDS_RESULT dleds_reportProgress(
 {
     DLEDS_RESULT result = DLEDS_OK;
     *pAbortRequest = 0;
-    
+
     if (sessionData.protocolVersion == DLEDS_PROTOCOL_VERSION_2)
     {
         /* Send progress request and wait for response message */
         result = dleds_sendProgressRequest(
             ongoingOperation, progressInfo, requestReset,
             resetTimeout, errorCode, infoText);
-     
+
         if (result == DLEDS_OK)
         {
             /* To Do: Always wait for response when implemented in MTVD */
@@ -1044,26 +1055,26 @@ DLEDS_RESULT dleds_reportProgress(
             {
                 DebugError1("Receive Progress respons failed (%d)", result);
             }
-            
+
         }
         else
         {
             DebugError1("Send Progress request failed (%d)", result);
         }
     }
-    
+
     return result;
 }
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_handleCleanUpRequest
  *
  * Abstract:      This function handles the Clean Up request. Download has to be
  *                allowed. The device is reset to download mode before any clean
  *                up is done. All End Device Sub packages previously downloaded
- *                with DLEDS are deleted from the device. 
+ *                with DLEDS are deleted from the device.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1081,10 +1092,10 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
     DLEDS_RESULT    reportResult;
     int             iptResult;
     EDReqCleanUp*   pReqCleanUp;
-    UINT8           topoCounter = 0; 
-    UINT32          ownIpAddress;   
-    char            tempSrcUri[102];   
-    char            srcUri[102];  
+    UINT8           topoCounter = 0;
+    UINT32          ownIpAddress;
+    char            tempSrcUri[102];
+    char            srcUri[102];
     EDRepCleanUp    repCleanUp;
     CHAR8           infoText[115];
     UINT8           abortRequest;
@@ -1095,14 +1106,14 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
         DebugError0("Invalid input parameters to function dleds_handleCleanUpRequest()");
         DebugError1("    pMsgInfo= 0x%X", pMsgInfo);
         DebugError1("    pReqData= 0x%X", pReqData);
-        DebugError2("    reqDataSize= 0x%X, expected value= 0x%X", reqDataSize, sizeof(EDReqCleanUp)); 
+        DebugError2("    reqDataSize= 0x%X, expected value= 0x%X", reqDataSize, sizeof(EDReqCleanUp));
         result = DLEDS_ERROR;
     }
     else
     {
         /* Handle received clean up request message */
         pReqCleanUp = (EDReqCleanUp*) pReqData;
-        
+
         /* Check that version is valid */
         if (!(pReqCleanUp->appVersion == EDReqCleanUp_appVersion))
         {
@@ -1139,7 +1150,7 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
             /* Convert own IP address to URI string to be used as source URI */
             ownIpAddress = IPTCom_getOwnIpAddr();
             DebugError1("Own IP address to be converted to URI (0x%x)", ownIpAddress);
-            topoCounter = 0;                 
+            topoCounter = 0;
             iptResult = IPTCom_getUriHostPart(
                 ownIpAddress,      /* IP address */
                 tempSrcUri,        /* Pointer to resulting URI */
@@ -1160,7 +1171,7 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
             {
                 repCleanUp.status = CLEAN_UP_OK;
             }
-            
+
             iptResult = MDComAPI_putRespMsg(
                 oEDRepCleanUp,          /* ComId (293)*/
                 0,                      /* UserStatus */
@@ -1194,13 +1205,13 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
                         if (abortRequest == PROGRESS_CONTINUE)
                         {
                             /* Make a reset to download mode and make a clean up */
-                            result = dleds_writeStorageFile(&sessionData); 
+                            result = dleds_writeStorageFile(&sessionData);
                             if (result == DLEDS_OK)
                             {
                                 result = DLEDS_CLEAN_UP_RESET;
                             }
                             else
-                            {   
+                            {
                                 /* Failed to write session data to temp storage file */
                                 /* Abort clean up and wait for next request */
                                 result = DLEDS_EDSTATUS;
@@ -1229,8 +1240,8 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
                 /*    */
                 DebugError1("MDComAPI_putRespMsg() failed with error (%d)",
                     iptResult);
-                /* 
-                * forget this request, 
+                /*
+                * forget this request,
                 * wait for the next request
                 */
                 result = DLEDS_EDSTATUS;
@@ -1245,10 +1256,10 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_wait_for_request
  *
- * Abstract:      This function waits for one of the request messages. 
+ * Abstract:      This function waits for one of the request messages.
  *                - Request Status (version 1), ComID = 272
  *                - Request Status (version 2), ComID = 278
  *                - Request Version Info, ComID = 274
@@ -1261,8 +1272,7 @@ static DLEDS_RESULT dleds_handleCleanUpRequest(
  * Globals:       appResultCode - is set to to be included in response message
  *                sessionData - updated with information from the request message
  */
-DLEDS_RESULT dleds_wait_for_request(
-    void )
+DLEDS_RESULT dleds_wait_for_request( void )
 {
     DLEDS_RESULT        result = DLEDS_OK;
     int                 iptResult = IPT_OK;
@@ -1283,7 +1293,7 @@ DLEDS_RESULT dleds_wait_for_request(
                     &pReqData,      /* Pointer to a pointer to data buffer */
                     &reqDataSize,   /* Pointer to data length */
                     IPT_NO_WAIT);   /* Timeout */
-        
+
     if (iptResult == MD_QUEUE_NOT_EMPTY)
     {
         if (msgInfo.msgType == MD_MSGTYPE_REQUEST)
@@ -1307,6 +1317,7 @@ DLEDS_RESULT dleds_wait_for_request(
                 case iMCGReqSendFile2:
                 case iEDReqSendFile2:
                 {
+                    printf("dleds_handleSendFileRequests\n");
                     result = dleds_handleSendFileRequests(&msgInfo, pReqData, reqDataSize);
                     break;
                 }
@@ -1325,7 +1336,7 @@ DLEDS_RESULT dleds_wait_for_request(
                     /* Unexpected COM ID */
                     /* Do nothing, stay in this state and wait for next message */
                     DebugError1("Unexpected COM ID (%d) received", msgInfo.comId);
-                    result = DLEDS_ERROR;                                  
+                    result = DLEDS_ERROR;
                     break;
                 }
             }
@@ -1352,9 +1363,9 @@ DLEDS_RESULT dleds_wait_for_request(
 
         /* Wait 1 second until next check of queue */
         IPTVosTaskDelay(1000);
-        result = DLEDS_ERROR;        
+        result = DLEDS_ERROR;
     }
-    
+
     /* Make sure that buffer allocated by IPTCom is returned */
     if (pReqData != NULL)
     {
@@ -1364,17 +1375,17 @@ DLEDS_RESULT dleds_wait_for_request(
         {
             /* error */
             DebugError1("MDComAPI_freeBuf returns error code (%d)", iptResult);
-        } 
-    }               
-    
+        }
+    }
+
     return result;
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_send_status_message
  *
- * Abstract:      This function . 
+ * Abstract:      This function .
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1387,37 +1398,37 @@ DLEDS_RESULT dleds_send_status_message(
 {
     DLEDS_RESULT result = DLEDS_OK;
     int iptResult = IPT_OK;
-    MCGDLFTfSt sendStatusData; 
+    MCGDLFTfSt sendStatusData;
     char destUri[102];
-    char srcUri[102];   
-    char tempSrcUri[102];   
+    char srcUri[102];
+    char tempSrcUri[102];
     static int retryCounter = 0;
-    UINT8 topoCounter = 0; 
-    UINT32 ownIpAddress;   
-    
+    UINT8 topoCounter = 0;
+    UINT32 ownIpAddress;
+
     if (sessionData.protocolVersion == DLEDS_PROTOCOL_VERSION_1)
     {
         /* Status message should be sent */
         sendStatusData.appVersion = MCGDLFTfSt_appVersion;
         sendStatusData.appResultCode = appResultCode;
         sendStatusData.transactionId = sessionData.requestInfo.transactionId;
-        
-        /* Use source URI from Request message as destination URI for STATUS message */ 
+
+        /* Use source URI from Request message as destination URI for STATUS message */
         strcpy(destUri,sessionData.srcUri);
-        
+
         /* Convert own IP address to URI string to be used as source URI */
         ownIpAddress = IPTCom_getOwnIpAddr();
-        topoCounter = 0;                 
+        topoCounter = 0;
         iptResult = IPTCom_getUriHostPart(
                         ownIpAddress,      /* IP address */
                         tempSrcUri,        /* Pointer to resulting URI */
                         &topoCounter);     /* Topo counter */
-                    
+
         if (iptResult == IPT_OK)
         {
             strcpy(srcUri,"DLEDService@");
-            strcat(srcUri,tempSrcUri); 
-        
+            strcat(srcUri,tempSrcUri);
+
             iptResult = MDComAPI_putDataMsg(
                 iMCGDLFileTfST,             /* ComId (854)*/
                 (char*) &sendStatusData,    /* pData */
@@ -1429,7 +1440,7 @@ DLEDS_RESULT dleds_send_status_message(
                 0,                          /* DestId */
                 destUri,                    /* Pointer to Dest URI */
                 srcUri);                    /* Pointer to Src URI */
-                
+
             if (iptResult == IPT_OK)
             {
                 retryCounter = 0;
@@ -1447,8 +1458,8 @@ DLEDS_RESULT dleds_send_status_message(
                 }
                 else
                 {
-                    /* 
-                     * forget this request, 
+                    /*
+                     * forget this request,
                      * reset to RUN mode and wait for the next
                      */
                     retryCounter = 0;
@@ -1460,13 +1471,13 @@ DLEDS_RESULT dleds_send_status_message(
                 /*  Other error returned from MDComAPI_putDataMsg */
                 DebugError1("MDComAPI_putDataMsg() failed with error (%d)",
                     iptResult);
-                /* 
-                 * forget this request, 
+                /*
+                 * forget this request,
                  * reset to RUN mode and wait for the next request
                  */
                 retryCounter = 0;
-                DLEDS_STATE = RESET_MODE;   
-            } 
+                DLEDS_STATE = RESET_MODE;
+            }
         }
         else
         {
@@ -1486,10 +1497,10 @@ DLEDS_RESULT dleds_send_status_message(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_send_response_message
  *
- * Abstract:      This function . 
+ * Abstract:      This function .
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1505,24 +1516,24 @@ DLEDS_RESULT dleds_send_response_message(
     int iptResult = IPT_OK;
     MCGRepSendFile responseData;
     static int retryCounter = 0;
-    UINT8 topoCounter = 0; 
+    UINT8 topoCounter = 0;
     char tempSrcUri[102];
     char srcUri[102];
     UINT32 ownIpAddress;
     UINT8 abortRequest;
-    
+
     /* Response message should be sent */
     responseData.appResultCode = appResultCode;
-    
+
     /* Convert own IP address to URI string to be used as source URI */
     ownIpAddress = IPTCom_getOwnIpAddr();
-    topoCounter = 0;                 
+    topoCounter = 0;
     iptResult = IPTCom_getUriHostPart(
                     ownIpAddress,      /* IP address */
                     tempSrcUri,        /* Pointer to resulting URI */
                     &topoCounter);     /* Topo counter */
     strcpy(srcUri,"DLEDService@");
-    strcat(srcUri,tempSrcUri); 
+    strcat(srcUri,tempSrcUri);
     if (sessionData.protocolVersion == DLEDS_PROTOCOL_VERSION_1)
     {
         responseData.appVersion = MCGRepSendFile_appVersion;
@@ -1574,7 +1585,7 @@ DLEDS_RESULT dleds_send_response_message(
         {
             reportResult = dleds_reportProgress(PROGRESS_ED_RESTART_PROGRESS, PROGRESS_5, PROGRESS_RESET_REQUEST,
                                                 PROGRESS_USE_DEFAULT_TIMEOUT, DL_OK, NULL, &abortRequest);
-                                          
+
             /* To Do: Handle abort request */
         }
     }
@@ -1590,8 +1601,8 @@ DLEDS_RESULT dleds_send_response_message(
         }
         else
         {
-            /* 
-             * forget this request session, 
+            /*
+             * forget this request session,
              * wait for the next request
              */
             retryCounter = 0;
@@ -1603,13 +1614,13 @@ DLEDS_RESULT dleds_send_response_message(
         /*   */
         DebugError1("MDComAPI_putRespMsg() failed with error (%d)",
             iptResult);
-        /* 
-         * forget this request, 
+        /*
+         * forget this request,
          * wait for the next request
          */
         retryCounter = 0;
         result = DLEDS_ERROR;
-    } 
+    }
     /* To avoid compiler warning */
     (void)reportResult;
 
@@ -1617,12 +1628,12 @@ DLEDS_RESULT dleds_send_response_message(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_wait_for_result
  *
  * Abstract:      This function waits for the result of previous response or
  *                status message. Which message type that was sent depends on
- *                the current operation mode.  
+ *                the current operation mode.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1637,9 +1648,9 @@ DLEDS_RESULT dleds_wait_for_result(
     MSG_INFO        msgInfo;
     char*           pResultData;
     UINT32          resultDataSize = 0;
-    static int      retryCounter = 0;    
-    
-    /* 
+    static int      retryCounter = 0;
+
+    /*
      * Let IPTCom allocate buffer
      * Use IPT_WAIT_FOREVER since there will always be
      * a result received within a limited time
@@ -1650,7 +1661,7 @@ DLEDS_RESULT dleds_wait_for_result(
         &pResultData,
         &resultDataSize,
         IPT_WAIT_FOREVER);
-        
+
     if (iptResult == MD_QUEUE_NOT_EMPTY)
     {
         if (msgInfo.msgType == MD_MSGTYPE_RESULT)
@@ -1661,13 +1672,13 @@ DLEDS_RESULT dleds_wait_for_result(
                 {
                     /* Result of response message received (COMID = 851) */
                     retryCounter = 0;
-                    result = DLEDS_OK;                    
+                    result = DLEDS_OK;
                 }
                 else if (msgInfo.comId == iMCGDLFileTfST)
                 {
                     /* Result of status message received (COMID = 854) */
-                    retryCounter = 0;  
-                    result = DLEDS_OK;                    
+                    retryCounter = 0;
+                    result = DLEDS_OK;
                 }
             }
             else
@@ -1683,13 +1694,13 @@ DLEDS_RESULT dleds_wait_for_result(
                 }
                 else
                 {
-                    /* 
-                     * forget this request session, 
+                    /*
+                     * forget this request session,
                      * reset to RUN mode and wait for the next request
                      */
                     retryCounter = 0;
                     result = DLEDS_NO_OF_RETRIES_EXCEEDED;
-                }                
+                }
             }
         }
         else
@@ -1722,10 +1733,10 @@ DLEDS_RESULT dleds_wait_for_result(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_handlePackageVersion1
  *
- * Abstract:      This function  
+ * Abstract:      This function
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1739,14 +1750,14 @@ static DLEDS_RESULT dleds_handlePackageVersion1(
 {
     DLEDS_RESULT result = DLEDS_OK;
 
-    /* Select where to store temporary files for FTP and unpacking of ED package */ 
+    /* Select where to store temporary files for FTP and unpacking of ED package */
     if (dleds_setDledsTempPath() != DLEDS_OK)
     {
         /* Failed to create temporary directory to be used when receiving ED package */
         /* Save this status to be able to return DiskErr as resultcode on download request */
         result = DL_DISK_FULL;
     }
-    
+
     if (result == DLEDS_OK)
     {
         /* Uninstall any previously installed sub package to  */
@@ -1771,23 +1782,23 @@ static DLEDS_RESULT dleds_handlePackageVersion1(
         if (dleds_diskSpaceAvailable(dledsTempDirectory, sessionData.requestInfo.fileSize) == DLEDS_ERROR)
         {
             DebugError1("dleds_handlePackageVersion1: Not enought disk space, filesize is %u kByte", sessionData.requestInfo.fileSize);
-            /* 
+            /*
             * Make sure that response message is sent.
             * Error code should be sent in this case
             */
             result = DL_DISK_FULL;
         }
     }
-   
+
     if (result == DLEDS_OK)
     {
         /* Use FTP to copy file from host */
         result = dleds_ftpCopyFile();
     }
-            
+
     if (result == DLEDS_OK)
     {
-        /* Call DVS function to install ED package */ 
+        /* Call DVS function to install ED package */
         result = dledsInstallEDPackage(sessionData.requestInfo.fileName, dledsTempDirectory);
         if (result == DLEDS_OK)
         {
@@ -1836,10 +1847,10 @@ static DLEDS_RESULT dleds_handlePackageVersion1(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_handlePackageVersion2
  *
- * Abstract:      This function  
+ * Abstract:      This function
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1868,7 +1879,7 @@ static DLEDS_RESULT dleds_handlePackageVersion2(
 
         if (result == DLEDS_OK)
         {
-            /* Select where to store temporary files for FTP and unpacking of ED package */ 
+            /* Select where to store temporary files for FTP and unpacking of ED package */
             if(dleds_setDledsTempPath() != DLEDS_OK)
             {
                 /* Failed to create temporary directory to be used when receiving EDSP package */
@@ -1965,10 +1976,10 @@ static DLEDS_RESULT dleds_handlePackageVersion2(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_ping
  *
- * Abstract:      This function  
+ * Abstract:      This function
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -1979,34 +1990,34 @@ static void dleds_ping(
     void)
 {
     int     iptResult = IPT_OK;
-    EDPing  sendPingData; 
+    EDPing  sendPingData;
     char    destUri[102];
-    char    srcUri[102];   
-    char    tempSrcUri[102];   
-    UINT8   topoCounter = 0; 
+    char    srcUri[102];
+    char    tempSrcUri[102];
+    UINT8   topoCounter = 0;
     UINT32  ownIpAddress;
-    UINT8   first = 0;   
-    
+    UINT8   first = 0;
+
     /* Fill in data in ping message */
     memset(&sendPingData, 0, sizeof(EDPing));
     sendPingData.appVersion = EDPing_appVersion;
-    
-    /* Use source URI from Request message as destination URI for STATUS message */ 
+
+    /* Use source URI from Request message as destination URI for STATUS message */
     strcpy(destUri,sessionData.srcUri);
-    
+
     /* Convert own IP address to URI string to be used as source URI */
     ownIpAddress = IPTCom_getOwnIpAddr();
-    topoCounter = 0;                 
+    topoCounter = 0;
     iptResult = IPTCom_getUriHostPart(
                     ownIpAddress,      /* IP address */
                     tempSrcUri,        /* Pointer to resulting URI */
                     &topoCounter);     /* Topo counter */
 
-                
+
     if (iptResult == IPT_OK)
     {
         strcpy(srcUri,"DLEDService@");
-        strcat(srcUri,tempSrcUri); 
+        strcat(srcUri,tempSrcUri);
 
         while(1)
         {
@@ -2021,7 +2032,7 @@ static void dleds_ping(
                 0,                          /* DestId */
                 destUri,                    /* Pointer to Dest URI */
                 srcUri);                    /* Pointer to Src URI */
-            
+
             /* Only write to log file for first error in sequence */
             if ((iptResult != IPT_OK) && (first == 0))
             {
@@ -2032,7 +2043,7 @@ static void dleds_ping(
             {
                 first = 0;
             }
-             
+
             IPTVosTaskDelay(5000);
         }
     }
@@ -2047,10 +2058,10 @@ static void dleds_ping(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_activatePingTask
  *
- * Abstract:      This function  
+ * Abstract:      This function
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -2061,12 +2072,12 @@ static void dleds_activatePingTask(
     void)
 {
     VOS_THREAD_ID pingThread;
-    
-    if((pingThread = IPTVosThreadSpawn("pingTask", 
-                            DLEDS_THREAD_POLICY, 
-                            DLEDS_THREAD_PRIORITY, 
-                            DLEDS_THREAD_STACK_SIZE, 
-                            (IPT_THREAD_ROUTINE)dleds_ping, 
+
+    if((pingThread = IPTVosThreadSpawn("pingTask",
+                            DLEDS_THREAD_POLICY,
+                            DLEDS_THREAD_PRIORITY,
+                            DLEDS_THREAD_STACK_SIZE,
+                            (IPT_THREAD_ROUTINE)dleds_ping,
                             NULL)) == 0)
     {
         DebugError0("Unable to spawn thread for Ping task");
@@ -2079,13 +2090,13 @@ static void dleds_activatePingTask(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_download_mode
  *
  * Abstract:      This function uninstalls any previously installed package type
  *                that is about to be installed. Checks that there is enough disk
  *                space available to retrieve ED package from FTP server, unpack
- *                and install it. At least 
+ *                and install it. At least
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -2102,10 +2113,10 @@ DLEDS_RESULT dleds_download_mode(
     DLEDS_RESULT reportResult;
     EDIdent      pdBuffer;
     UINT8        abortRequest = 0;
-    
+
     /* Should not be sent if preparing to run in DLEDS Idle Mode for special package handling */
     if (sessionData.downloadResetReason != DLEDS_DL_IDLE_MODE)
-    { 
+    {
         reportResult = dleds_reportProgress(PROGRESS_ED_IN_DL_MODE, PROGRESS_10, PROGRESS_NO_RESET_IN_PROGRESS,
                                             PROGRESS_USE_DEFAULT_TIMEOUT, DL_OK, NULL, &abortRequest);
     }
@@ -2122,7 +2133,7 @@ DLEDS_RESULT dleds_download_mode(
         dleds_activatePingTask();
     }
     /* Retrieve information to be included in the IPTCom PD message (comid=271) */
-    dleds_versionRetrieve(&pdBuffer);    
+    dleds_versionRetrieve(&pdBuffer);
     PDComAPI_put(pdHandle,(BYTE*)&pdBuffer);
     PDComAPI_source(DLEDS_SCHEDULE_GROUP_ID);
 
@@ -2134,7 +2145,7 @@ DLEDS_RESULT dleds_download_mode(
             result = dleds_handlePackageVersion1();
             reportResult = dleds_reportProgress(PROGRESS_INSTALL_COMPLETED, PROGRESS_90, PROGRESS_NO_RESET_IN_PROGRESS,
                                                 PROGRESS_USE_DEFAULT_TIMEOUT, appResultCode, NULL, &abortRequest);
-            reportResult = dleds_reportProgress(PROGRESS_ED_RESTART_PROGRESS, PROGRESS_95, PROGRESS_RESET_REQUEST, 
+            reportResult = dleds_reportProgress(PROGRESS_ED_RESTART_PROGRESS, PROGRESS_95, PROGRESS_RESET_REQUEST,
                                                 PROGRESS_USE_DEFAULT_TIMEOUT, appResultCode, NULL, &abortRequest);
         }
         else if (sessionData.packageVersion == DLEDS_PACKAGE_VERSION_2)
@@ -2194,22 +2205,22 @@ DLEDS_RESULT dleds_download_mode(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_add_ipt_config
  *
- * Abstract:      This function . 
+ * Abstract:      This function .
  *
  * Return value:  IPT_OK
  *                IPT_ERROR
  *
- * Globals:       
- *                
+ * Globals:
+ *
  */
 int dleds_add_ipt_config(
     void)
 {
     int iptRes = IPT_ERROR;
-    IPT_CONFIG_EXCHG_PAR exchg;    
+    IPT_CONFIG_EXCHG_PAR exchg;
     IPT_CONFIG_DATASET_EXT datasetExt;
     IPT_DATASET_FORMAT datasetFormat[40];
     UINT32 dataSetId = 0;
@@ -2246,7 +2257,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 851 oMCGRepSendFile */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2262,7 +2273,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 852 iMCGReqSendFile2 */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2294,7 +2305,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-   
+
     /* datasetId 854 iMCGDLFileTfST */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2312,7 +2323,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 271 oEDIdent */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2402,7 +2413,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-   
+
     /* datasetId 272 iEDReqStatus */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2422,7 +2433,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 274 iEDReqVersionInfo */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2442,7 +2453,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 275 oEDRepVersionInfo */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2464,7 +2475,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 290 oEDReqDLProgress */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2492,7 +2503,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     /* datasetId 291 iEDRepDLProgress */
     datasetFormat[0].id = IPT_UINT32;
     datasetFormat[0].size = 1;
@@ -2573,18 +2584,18 @@ int dleds_add_ipt_config(
     exchg.comParId = IPT_DEF_COMPAR_MD_ID;
     exchg.pdRecPar.pSourceURI        = NULL;
     exchg.pdRecPar.validityBehaviour = IPT_INVALID_KEEP;
-    exchg.pdRecPar.timeoutValue      = 0;    
+    exchg.pdRecPar.timeoutValue      = 0;
     exchg.pdSendPar.pDestinationURI  = NULL;
     exchg.pdSendPar.cycleTime        = 0;
     exchg.pdSendPar.redundant        = 0;
-    exchg.mdRecPar.pSourceURI        = NULL;    
+    exchg.mdRecPar.pSourceURI        = NULL;
     exchg.mdSendPar.pDestinationURI  = NULL;
     iptRes = iptConfigAddExchgPar(&exchg);
     if ((iptRes != IPT_OK) && (iptRes != (int)IPT_TAB_ERR_EXISTS))
     {
         return iptRes;
     }
-    
+
     exchg.comId = oMCGRepSendFile; /* 851 */
     exchg.datasetId = 851;
     iptRes = iptConfigAddExchgPar(&exchg);
@@ -2592,7 +2603,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     exchg.comId = iMCGReqSendFile2; /* 852 */
     exchg.datasetId = 852;
     iptRes = iptConfigAddExchgPar(&exchg);
@@ -2600,7 +2611,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     exchg.comId = iMCGDLFileTfST; /* 854 */
     exchg.datasetId = 854;
     iptRes = iptConfigAddExchgPar(&exchg);
@@ -2608,7 +2619,7 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-    
+
     exchg.comId = iEDReqStatus; /* 272 */
     exchg.datasetId = 272;
     iptRes = iptConfigAddExchgPar(&exchg);
@@ -2638,13 +2649,13 @@ int dleds_add_ipt_config(
     {
         return iptRes;
     }
-   
+
     exchg.comId = iEDReqSendFile2; /* 276 */
     exchg.datasetId = 850;
     exchg.comParId = IPT_DEF_COMPAR_MD_ID;
     exchg.pdRecPar.pSourceURI        = NULL;
     exchg.pdRecPar.validityBehaviour = IPT_INVALID_KEEP;
-    exchg.pdRecPar.timeoutValue      = 0;    
+    exchg.pdRecPar.timeoutValue      = 0;
     exchg.pdSendPar.pDestinationURI  = NULL;
     exchg.pdSendPar.cycleTime        = 0;
     exchg.pdSendPar.redundant        = 0;
@@ -2672,11 +2683,11 @@ int dleds_add_ipt_config(
     exchg.comParId = IPT_DEF_COMPAR_MD_ID;
     exchg.pdRecPar.pSourceURI        = NULL;
     exchg.pdRecPar.validityBehaviour = IPT_INVALID_KEEP;
-    exchg.pdRecPar.timeoutValue      = 0;    
+    exchg.pdRecPar.timeoutValue      = 0;
     exchg.pdSendPar.pDestinationURI  = NULL;
     exchg.pdSendPar.cycleTime        = 0;
     exchg.pdSendPar.redundant        = 0;
-    exchg.mdRecPar.pSourceURI        = NULL;    
+    exchg.mdRecPar.pSourceURI        = NULL;
     exchg.mdSendPar.pDestinationURI  = NULL;
     iptRes = iptConfigAddExchgPar(&exchg);
     if ((iptRes != IPT_OK) && (iptRes != (int)IPT_TAB_ERR_EXISTS))
@@ -2708,11 +2719,11 @@ int dleds_add_ipt_config(
     exchg.comParId = IPT_DEF_COMPAR_MD_ID;
     exchg.pdRecPar.pSourceURI        = NULL;
     exchg.pdRecPar.validityBehaviour = IPT_INVALID_KEEP;
-    exchg.pdRecPar.timeoutValue      = 0;    
+    exchg.pdRecPar.timeoutValue      = 0;
     exchg.pdSendPar.pDestinationURI  = NULL;
     exchg.pdSendPar.cycleTime        = 0;
     exchg.pdSendPar.redundant        = 0;
-    exchg.mdRecPar.pSourceURI        = NULL;    
+    exchg.mdRecPar.pSourceURI        = NULL;
     exchg.mdSendPar.pDestinationURI  = NULL;
     iptRes = iptConfigAddExchgPar(&exchg);
     if ((iptRes != IPT_OK) && (iptRes != (int)IPT_TAB_ERR_EXISTS))
@@ -2736,11 +2747,11 @@ int dleds_add_ipt_config(
     exchg.comParId = IPT_DEF_COMPAR_MD_ID;
     exchg.pdRecPar.pSourceURI        = NULL;
     exchg.pdRecPar.validityBehaviour = IPT_INVALID_KEEP;
-    exchg.pdRecPar.timeoutValue      = 0;    
+    exchg.pdRecPar.timeoutValue      = 0;
     exchg.pdSendPar.pDestinationURI  = NULL;
     exchg.pdSendPar.cycleTime        = 0;
     exchg.pdSendPar.redundant        = 0;
-    exchg.mdRecPar.pSourceURI        = NULL;    
+    exchg.mdRecPar.pSourceURI        = NULL;
     exchg.mdSendPar.pDestinationURI  = NULL;
     iptRes = iptConfigAddExchgPar(&exchg);
     if ((iptRes != IPT_OK) && (iptRes != (int)IPT_TAB_ERR_EXISTS))
@@ -2782,10 +2793,10 @@ int dleds_add_ipt_config(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_uninit
  *
- * Abstract:      This function makes a clean up before termination. 
+ * Abstract:      This function makes a clean up before termination.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -2798,11 +2809,11 @@ DLEDS_RESULT dleds_uninit(
     void)
 {
     DLEDS_RESULT result = DLEDS_OK;
-    int iptResult = IPT_OK;    
+    int iptResult = IPT_OK;
 
     DebugError0("DLEDS daemon uninit started");
-    
-    PDComAPI_unpublish(&pdHandle); 
+
+    PDComAPI_unpublish(&pdHandle);
     MDComAPI_removeListenerQ(requestQueueId);
     if (resultQueueId != (MD_QUEUE) NULL)
     {
@@ -2829,10 +2840,10 @@ DLEDS_RESULT dleds_uninit(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_sendEchoMessage
  *
- * Abstract:      This function . 
+ * Abstract:      This function .
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -2845,11 +2856,11 @@ void dleds_sendEchoMessage(void)
     char        data[] = "Echo message";
     char        destUri[102];
     char        tempDestUri[102];
-    UINT8       topoCounter = 0; 
+    UINT8       topoCounter = 0;
     UINT32      size;
     MSG_INFO    msgInfo;
     char*       pRecBuf;
-    
+
     /* Convert source IP address to URI string to be used as destination URI */
 
     iptResult = IPTCom_getUriHostPart(
@@ -2859,8 +2870,8 @@ void dleds_sendEchoMessage(void)
     if (iptResult == IPT_OK)
     {
         strcpy(destUri,"@");
-        strcat(destUri,tempDestUri); 
-        
+        strcat(destUri,tempDestUri);
+
         iptResult = MDComAPI_putReqMsg(
             110,                    /* ComId, Echo message */
             (char*)&data,           /* Data buffer */
@@ -2877,7 +2888,7 @@ void dleds_sendEchoMessage(void)
             0,                      /* Dest ID */
             destUri,                /* Destination URI */
             NULL);                  /* No overriding of source URI */
-            
+
         if (iptResult != IPT_OK)
         {
             /* The sending couldn't be started. */
@@ -2888,19 +2899,19 @@ void dleds_sendEchoMessage(void)
         {
             pRecBuf = NULL;  /* Use IPTCom allocated buffer */
             size = 0;
-                
+
             iptResult = MDComAPI_getMsg(
                     echoQueueId,        /* Queue ID */
                     &msgInfo,           /* Message info */
-                    &pRecBuf,           /* Pointer to pointer to data 
+                    &pRecBuf,           /* Pointer to pointer to data
                                             buffer */
                     &size,              /* Pointer to size. Size shall
                                             be set to own buffer size at
                                             the call. The IPTCom will
-                                            return the number of received 
+                                            return the number of received
                                             bytes */
                     IPT_WAIT_FOREVER);  /* Wait for result */
-                    
+
             if (iptResult == MD_QUEUE_NOT_EMPTY)
             {
                 if (msgInfo.msgType != MD_MSGTYPE_RESPONSE )
@@ -2914,7 +2925,7 @@ void dleds_sendEchoMessage(void)
             {
                 DebugError1("MDComAPI_getMsg() FAILED with (%d) when waiting for echo response message", iptResult);
             }
-            
+
             if (pRecBuf != NULL)
             {
                 iptResult = MDComAPI_freeBuf(pRecBuf);
@@ -2922,7 +2933,7 @@ void dleds_sendEchoMessage(void)
                 {
                     /* error */
                     DebugError1("MDComAPI_freeBuf returns error code (%d)", iptResult);
-                } 
+                }
             }
         }
     }
@@ -2934,14 +2945,14 @@ void dleds_sendEchoMessage(void)
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_checkDownloadStatus
  *
  * Abstract:      This function checks if it is OK to continue in DOWNLOAD mode.
  *                It is checked that the temporary storage file exists and
  *                could be read. This is important since the session
  *                information in this file is neccessary to be able to continue
- *                the download transfer in download mode. 
+ *                the download transfer in download mode.
  *
  * Return value:  DLEDS_OK
  *                DLEDS_ERROR
@@ -2973,7 +2984,7 @@ DLEDS_RESULT dleds_checkDownloadModeStatus(
             {
                 /*
                 * Information from temporary storage file could not be read.
-                * Information in this file is neccessary to be able to 
+                * Information in this file is neccessary to be able to
                 * continue in download mode.
                 */
                 DebugError1("Could not read information from file with download session information (%s)",
@@ -3006,14 +3017,14 @@ DLEDS_RESULT dleds_checkDownloadModeStatus(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_checkRunModeStatus
  *
  * Abstract:      This function checks if it is OK to continue in RUN mode. This
  *                is always the case. Removes any temporary storage file that
  *                has not been deleted since previous transfer session. This
  *                could be the case if previous session was disruppted due to
- *                any error situation.  
+ *                any error situation.
  *
  * Return value:  DLEDS_OK
  *
@@ -3035,7 +3046,7 @@ DLEDS_RESULT dleds_checkRunModeStatus(
     int     rDirStatus;
     DLEDS_RESULT reportResult;
     UINT8 abortRequest;
-    
+
 
     /* Check if there is any temporary storage file */
     localRequestInProgress = FALSE;
@@ -3068,28 +3079,28 @@ DLEDS_RESULT dleds_checkRunModeStatus(
                 */
                 DebugError1("No transfer in progress. Delete temporary storage file (%s)",
                     DLEDS_TEMP_STORAGE_FILE_NAME);
-                    
+
                 /* Delete temporary storage file */
                 if (remove(DLEDS_TEMP_STORAGE_FILE_NAME) != 0)
                 {
                     DebugError1("Failed to delete temporary storage file (%s)",
                     DLEDS_TEMP_STORAGE_FILE_NAME);
                 }
-                
+
                 /* Clear sessionData */
                 DebugError0("Clearing sessionData");
                 memset(&sessionData, 0, sizeof(sessionData));
 
                 /* Delete temporary installation file if it exists */
                 fp = fopen(DLEDS_INSTALLATION_FILE, "r" );
-                if (fp != NULL)  
+                if (fp != NULL)
                 {
                     if (remove(DLEDS_INSTALLATION_FILE) != 0)
                     {
                         DebugError1("Could not delete temporary file (%s)", DLEDS_INSTALLATION_FILE);
                     }
                 }
-                
+
                 /* Delete any FTP directory if existing */
                 /* Find out where the temporary FTP directory was created on this device */
                 /* This directory is normally created and deleted in Download Mode */
@@ -3126,11 +3137,11 @@ DLEDS_RESULT dleds_checkRunModeStatus(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_storageFileExists
  *
  * Abstract:      This function checks if the temporary storage file with
- *                session information exists. 
+ *                session information exists.
  *
  * Return value:  DLEDS_OK      - File exists
  *                DLEDS_ERROR   - File is missing
@@ -3144,7 +3155,7 @@ DLEDS_RESULT dleds_storageFileExists(
     DLEDS_RESULT    result = DLEDS_OK;
 
     fp = fopen(DLEDS_TEMP_STORAGE_FILE_NAME, "r" );
-    if (fp == NULL)  
+    if (fp == NULL)
     {
         result = DLEDS_ERROR;
     }
@@ -3156,10 +3167,10 @@ DLEDS_RESULT dleds_storageFileExists(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_storageFileValid
  *
- * Abstract:      This function checks if the temporary storage file is OK. 
+ * Abstract:      This function checks if the temporary storage file is OK.
  *
  * Return value:  DLEDS_OK      - File is OK
  *                DLEDS_ERROR   - File is corrupt
@@ -3173,7 +3184,7 @@ static DLEDS_RESULT dleds_storageFileValid(
     DLEDS_RESULT    result = DLEDS_OK;
 
     fp = fopen(DLEDS_TEMP_STORAGE_FILE_NAME, "r" );
-    if (fp == NULL)  
+    if (fp == NULL)
     {
         DebugError1("Failed to open file (%s)",
             DLEDS_TEMP_STORAGE_FILE_NAME);
@@ -3189,11 +3200,11 @@ static DLEDS_RESULT dleds_storageFileValid(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_readStorageFile
  *
  * Abstract:      This function reads session information from the temporary
- *                storage file. 
+ *                storage file.
  *
  * Return value:  DLEDS_OK      - Information from file has been read
  *                DLEDS_ERROR   - No information read from file
@@ -3205,9 +3216,9 @@ DLEDS_RESULT dleds_readStorageFile(
 {
     FILE*           fp;
     DLEDS_RESULT    result = DLEDS_OK;
-    
+
     fp = fopen(DLEDS_TEMP_STORAGE_FILE_NAME, "r" );
-    if (fp == NULL)  
+    if (fp == NULL)
     {
         DebugError1("Failed to open file (%s)",
             DLEDS_TEMP_STORAGE_FILE_NAME);
@@ -3215,7 +3226,7 @@ DLEDS_RESULT dleds_readStorageFile(
     }
     else
     {
-        fscanf(fp,"%u", &(pSessionData->requestReceiveTime)); 
+        fscanf(fp,"%u", &(pSessionData->requestReceiveTime));
         fscanf(fp,"%u", &(pSessionData->sessionId));
         fscanf(fp,"%u", &(pSessionData->srcIpAddress));
         fscanf(fp,"%s", &(pSessionData->srcUri[0]));
@@ -3233,19 +3244,19 @@ DLEDS_RESULT dleds_readStorageFile(
         fscanf(fp,"%u", &(pSessionData->protocolVersion));
         fscanf(fp,"%u", &(pSessionData->packageVersion));
         fscanf(fp,"%u", &(pSessionData->completedOperation));
-        fclose(fp);        
+        fclose(fp);
     }
     return result;
-    
+
 }
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_writeStorageFile
  *
  * Abstract:      This function writes session information to the temporary
- *                storage file. 
+ *                storage file.
  *
  * Return value:  DLEDS_OK      - Information from file has been written
  *                DLEDS_ERROR   - No information written to file
@@ -3257,18 +3268,19 @@ DLEDS_RESULT dleds_writeStorageFile(
 {
     FILE*           fp;
     DLEDS_RESULT    result = DLEDS_OK;
-        
+
+    printf("%s : Here\n",__FUNCTION__);
     fp = fopen(DLEDS_TEMP_STORAGE_FILE_NAME, "w" );
-    if (fp == NULL)  
+    if (fp == NULL)
     {
         DebugError1("Failed to open file (%s)",
             DLEDS_TEMP_STORAGE_FILE_NAME);
-            
+
         result = DLEDS_ERROR;
     }
     else
     {
-        fprintf(fp,"%u\n", pSessionData->requestReceiveTime); 
+        fprintf(fp,"%u\n", pSessionData->requestReceiveTime);
         fprintf(fp,"%u\n", pSessionData->sessionId);
         fprintf(fp,"%u\n", pSessionData->srcIpAddress);
         fprintf(fp,"%s\n", pSessionData->srcUri);
@@ -3288,15 +3300,15 @@ DLEDS_RESULT dleds_writeStorageFile(
         fprintf(fp,"%u\n", pSessionData->completedOperation);
         fclose(fp);
     }
-    return result;    
+    return result;
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_checkCRC
  *
  * Abstract:      This function checks the CRC of the file.
- *                 
+ *
  *
  * Return value:  DLEDS_OK      - Message information structure is OK
  *                DLEDS_ERROR   - Message information structure is corrupt
@@ -3314,7 +3326,7 @@ DLEDS_RESULT dleds_checkCRC(
     FILE *fSource = 0;
     unsigned char sBuf[1024];
     int iBytesRead = 0;
-    
+
     fSource = fopen(pDestFile, "rb");
     if( fSource == 0)
     {
@@ -3345,7 +3357,7 @@ DLEDS_RESULT dleds_checkCRC(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_getIpString
  *
  * Abstract:      This function converts the IP address in a UINT32 format to a
@@ -3360,18 +3372,18 @@ static DLEDS_RESULT dleds_getIpString(char* pIpString, UINT32 ipAddress)
 {
     DLEDS_RESULT result = DLEDS_OK;
     UINT8 part1,part2,part3,part4;
-    
+
     part1 = (UINT8)(0xFF & (ipAddress >> 24));
     part2 = (UINT8)(0xFF & (ipAddress >> 16));
     part3 = (UINT8)(0xFF & (ipAddress >> 8));
     part4 = (UINT8)(0xFF & (ipAddress));
     sprintf (pIpString, "%u.%u.%u.%u", part1, part2, part3, part4);
-    
+
     return result;
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_ftpCopyFile
  *
  * Abstract:      This function retrieves the file from the FTP server and
@@ -3387,7 +3399,7 @@ static DLEDS_RESULT dleds_getIpString(char* pIpString, UINT32 ipAddress)
 static DLEDS_RESULT dleds_ftpCopyFile(
     void)
 {
-    DLEDS_RESULT        result = DLEDS_OK; 
+    DLEDS_RESULT        result = DLEDS_OK;
     DLEDS_RESULT        reportResult;
     char                destFile[512] = "";
     T_TDC_RESULT        tdcResult;
@@ -3397,11 +3409,11 @@ static DLEDS_RESULT dleds_ftpCopyFile(
     UINT8               abortRequest;
 
     topoCount = 0;
-    
+
     /* Set directory where to download ED package with FTP */
     strcpy(destFile, dledsTempDirectory);
     strcat(destFile, "/ftp");
-    
+
     tdcResult = tdcGetAddrByName(sessionData.requestInfo.fileServerHostName, &ipAddr, &topoCount);
     DebugError2("Fileserver Hostname= %s, IP address= 0x%x",
                 sessionData.requestInfo.fileServerHostName, ipAddr);
@@ -3409,18 +3421,18 @@ static DLEDS_RESULT dleds_ftpCopyFile(
     {
         DebugError2("Error (0x%x) from tdcGetAddrByName(), input URI = %s",
             tdcResult, sessionData.requestInfo.fileServerHostName);
-        return DLEDS_ERROR;         
+        return DLEDS_ERROR;
     }
     else
     {
         /* convert IP address in UINT32 to string */
         if (dleds_getIpString(ipAddrStr, ipAddr) != DLEDS_OK)
         {
-            DebugError1("Error from function dleds_getIpString(0x%x)", ipAddr); 
-            return DLEDS_ERROR;         
+            DebugError1("Error from function dleds_getIpString(0x%x)", ipAddr);
+            return DLEDS_ERROR;
         }
         DebugError2("IP address= 0x%x, IP string= %s", ipAddr, ipAddrStr);
-    }    
+    }
 
     DebugError1("***PLATFORM: Local FTP directory set to (%s)", destFile);
     DebugError2("***PLATFORM: IP address of FTP server (%s) (0x%x)", ipAddrStr, ipAddr);
@@ -3439,7 +3451,7 @@ static DLEDS_RESULT dleds_ftpCopyFile(
         }
     }
     /* Call function that contains Platform Specific code */
-    result = dledsPlatformFtp(destFile, ipAddrStr, ipAddr, 
+    result = dledsPlatformFtp(destFile, ipAddrStr, ipAddr,
                               sessionData.requestInfo.fileServerPath,
                               sessionData.requestInfo.fileName);
 
@@ -3476,13 +3488,13 @@ static DLEDS_RESULT dleds_ftpCopyFile(
 
     /* To avoid compiler warning */
     (void)reportResult;
-    
+
     return result;
 }
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_setDledsTempPath
  *
  * Abstract:      Creates path to temporary DLEDS directory where ED package will
@@ -3495,34 +3507,37 @@ static DLEDS_RESULT dleds_ftpCopyFile(
  */
 static DLEDS_RESULT dleds_setDledsTempPath(void)
 {
-    DLEDS_RESULT    result = DLEDS_ERROR;
+    DLEDS_RESULT    result = DLEDS_OK;
 
+    #if 0
     /* Call function that contains Platform Specific code */
     result = dledsPlatformSetDledsTempPath(dledsTempDirectory);
     DebugError2("***PLATFORM: Set DLEDS temp path (%s), result (%d)", dledsTempDirectory, result);
-    
+
     if ( (result == DLEDS_OK) && (strlen(dledsTempDirectory) != 0) )
     {
         /* DLEDS directory for temporary files selected */
-        strcat(dledsTempDirectory, "dleds");
+        strcat(dledsTempDirectory, DLEDS_TEMP_DIRECTORY);
         if ( createSubDirectory(dledsTempDirectory) != DLEDS_OK )
         {
-            DebugError1("Could not create  = %s", dledsTempDirectory); 
+            DebugError1("Could not create  = %s", dledsTempDirectory);
             result = DLEDS_ERROR;
         }
     }
-
-    DebugError1("DLEDS directory for temporary files (%s)", dledsTempDirectory); 
+    #endif
+    strcpy(dledsTempDirectory, DLEDS_ROOT_DIRECTORY);
+    dledsPlatformSetDledsTempPath(dledsTempDirectory);
+    DebugError1("DLEDS directory for temporary files (%s)", dledsTempDirectory);
     return result;
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_diskSpaceAvailable
  *
  * Abstract:      This function checks if there is enough free space in the
  *                file system to store and unpack the file. There has to be
- *                at least 2 times the file size available as free disk space. 
+ *                at least 2 times the file size available as free disk space.
  *
  * Return value:  DLEDS_OK      - Enough disk space available
  *                DLEDS_ERROR   - Not enough disk space available
@@ -3556,13 +3571,13 @@ DLEDS_RESULT dleds_diskSpaceAvailable(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: isMarkChar
  *
- * Abstract:      This function 
+ * Abstract:      This function
  *
- * Return value:   
- *                 
+ * Return value:
+ *
  *
  * Globals:       -
  */
@@ -3594,14 +3609,14 @@ static int isMarkChar(
 }
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_validFqdn
  *
  * Abstract:      This function checks if the input parameter is a valid
- *                hostname FQDN. 
+ *                hostname FQDN.
  *
- * Return value:  DLEDS_OK      - 
- *                DLEDS_ERROR   - 
+ * Return value:  DLEDS_OK      -
+ *                DLEDS_ERROR   -
  *
  * Globals:       -
  */
@@ -3712,15 +3727,15 @@ static DLEDS_HOST_URI_FQDN dleds_validFqdn(char* pUri)
             fqdn = Valid;
         }
     }
-    return fqdn;    
-} 
+    return fqdn;
+}
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_get_hwinfo
  *
- * Abstract:      This function returns HW info  
+ * Abstract:      This function returns HW info
  *
  * Return value:  DLEDS_OK      - HW info found
  *                DLEDS_ERROR   - No HW info found
@@ -3742,7 +3757,7 @@ static DLEDS_RESULT dleds_get_hwinfo(
     /******************************************************************************
     Retrieve HW info for unit type, serial number and delivered revision
     ******************************************************************************/
-    result = dledsPlatformGetHwInfo(unit_type, serial_number, delivery_revision);  
+    result = dledsPlatformGetHwInfo(unit_type, serial_number, delivery_revision);
     DebugError0("***PLATFORM: Find HW info for PD Version Info message");
 
     return result;
@@ -3750,14 +3765,14 @@ static DLEDS_RESULT dleds_get_hwinfo(
 
 
 /*******************************************************************************
- * 
+ *
  * Function name: dleds_versionRetrieve
  *
- * Abstract:      This function retrieves information to be put in the ED 
- *                 Identification Data sent as a Process Data message. 
+ * Abstract:      This function retrieves information to be put in the ED
+ *                 Identification Data sent as a Process Data message.
  *
- * Return value:  DLEDS_OK      - 
- *                DLEDS_ERROR   - 
+ * Return value:  DLEDS_OK      -
+ *                DLEDS_ERROR   -
  *
  * Globals:       -
  */
@@ -3768,13 +3783,13 @@ static void dleds_versionRetrieve(
     int ohalResult;
     int iptResult;
     int     IEdMode;
-    int     IConfigStatus; 
+    int     IConfigStatus;
     UINT32  ipAddress;
-    UINT8   version;   
-    UINT8   release;   
-    UINT8   update;    
+    UINT8   version;
+    UINT8   release;
+    UINT8   update;
     UINT8   evolution;
-    char    ipString[16]; 
+    char    ipString[16];
     char    uri[128];
     UINT8   topoCounter= 0;
     static UINT8        first = TRUE;
@@ -3786,28 +3801,28 @@ static void dleds_versionRetrieve(
     static char         deviceType[16];
     static char         serialNumber[16];
     static char         hwRevision[16];
-       
+
     pPdBuffer->appVersion = EDRepVersionInfo_appVersion;
-    
+
     /* This function is called with a cycle of 1 second */
     if (first == TRUE)
-    {       
-        /* Read version information that could be retrieved once because they are static */ 
-        
+    {
+        /* Read version information that could be retrieved once because they are static */
+
         /* Get SW versions used for ED Ident message */
         /* Call function that contains Platform Specific code */
         dledsPlatformGetEdIdentSwVersions(&btDluVersion, &cuDluVersion, &osDluVersion,
             &blcfgUluVersion, &ubootUluVersion);
-        DebugError4("***PLATFORM: SW versions BT(0x%x), CU(0x%x), BLFCG(0x%x), UBOOT(0x%x)", 
+        DebugError4("***PLATFORM: SW versions BT(0x%x), CU(0x%x), BLFCG(0x%x), UBOOT(0x%x)",
             btDluVersion, cuDluVersion, blcfgUluVersion, ubootUluVersion);
 
         memset(deviceType, 0, sizeof(deviceType));
         memset(serialNumber, 0, sizeof(serialNumber));
         memset(hwRevision, 0, sizeof(hwRevision));
-        (void) dleds_get_hwinfo(deviceType, serialNumber, hwRevision); 
-        
-        first = FALSE; 
-    }   
+        (void) dleds_get_hwinfo(deviceType, serialNumber, hwRevision);
+
+        first = FALSE;
+    }
 
     /* Write BT/SU SW version to PD message */
     pPdBuffer->BTSwNumber.ISysBTSwVersion   = (UINT8)(0xFF & (btDluVersion >> 24));
@@ -3827,7 +3842,7 @@ static void dleds_versionRetrieve(
     pPdBuffer->OSBaseSwNumber.ISysOSBaseSwVersion   =  (UINT8)(0xFF & (osDluVersion >> 24));
     pPdBuffer->OSBaseSwNumber.ISysOSBaseSwRelease   =  (UINT8)(0xFF & (osDluVersion >> 16));
     pPdBuffer->OSBaseSwNumber.ISysOSBaseSwUpdate    =  (UINT8)(0xFF & (osDluVersion >> 8));
-    pPdBuffer->OSBaseSwNumber.ISysOSBaseSwEvolution =  (UINT8)(0xFF & (osDluVersion));   
+    pPdBuffer->OSBaseSwNumber.ISysOSBaseSwEvolution =  (UINT8)(0xFF & (osDluVersion));
     memset(pPdBuffer->OSBaseSwNumber.Reserved, 0, sizeof(pPdBuffer->OSBaseSwNumber.Reserved));
 
     /* Write Boot loader configuration SW version to PD message */
@@ -3842,14 +3857,14 @@ static void dleds_versionRetrieve(
     pPdBuffer->BLSwNumber.ISysBLSwRelease   = (UINT8)(0xFF & (ubootUluVersion >> 16));
     pPdBuffer->BLSwNumber.ISysBLSwUpdate    = (UINT8)(0xFF & (ubootUluVersion >> 8));
     pPdBuffer->BLSwNumber.ISysBLSwEvolution = (UINT8)(0xFF & (ubootUluVersion));
-    memset(pPdBuffer->BLSwNumber.Reserved,0,sizeof(pPdBuffer->BLSwNumber.Reserved)); 
+    memset(pPdBuffer->BLSwNumber.Reserved,0,sizeof(pPdBuffer->BLSwNumber.Reserved));
 
     /* Write HW info to PD message */
     strcpy(pPdBuffer->HWInfo.IHwRevision,   hwRevision);
     strcpy(pPdBuffer->HWInfo.ISerialNumber, serialNumber);
     strcpy(pPdBuffer->HWInfo.IDeviceType,   deviceType);
     strcpy(pPdBuffer->HWInfo.ISupplierName, "");
-    strcpy(pPdBuffer->HWInfo.ISupplierData, ""); 
+    strcpy(pPdBuffer->HWInfo.ISupplierData, "");
     memset(pPdBuffer->HWInfo.Reserved, 0, sizeof(pPdBuffer->HWInfo.Reserved));;
 
 
@@ -3864,7 +3879,7 @@ static void dleds_versionRetrieve(
     {
         pPdBuffer->EndDeviceMode.IEdMode = 255;
         pPdBuffer->EndDeviceMode.IConfigStatus = 255;
-    }    
+    }
     if (dleds_getDlAllowed() == TRUE)
     {
         pPdBuffer->EndDeviceMode.DownloadAllowed = 1;
@@ -3876,11 +3891,11 @@ static void dleds_versionRetrieve(
     if (dleds_get_operation_mode() == DLEDS_OSDOWNLOAD_MODE)
     {
         /* download in progress */
-        pPdBuffer->EndDeviceMode.DownloadAllowed = 2; 
+        pPdBuffer->EndDeviceMode.DownloadAllowed = 2;
     }
     memset(pPdBuffer->EndDeviceMode.Reserved, 0, sizeof(pPdBuffer->EndDeviceMode.Reserved));
 
-        
+
 
     /* Write IP config to PD message */
     /* Convert own IP address to IP string */
@@ -3909,7 +3924,7 @@ static void dleds_versionRetrieve(
         pPdBuffer->IPConfig.IDevIPAddress[i] = 0;
     }
     strcpy(pPdBuffer->IPConfig.IDevIPAddress, ipString);
-    
+
     for (i=0; i<128; i++)
     {
         pPdBuffer->IPConfig.IDevFQDN[i] = 0;
@@ -3924,19 +3939,19 @@ void dleds_resetToRunMode(void)
     FILE*       fp;
     UINT32      delayValue = 0;
 
-    /* Delete temporary storage file that has been used in 
+    /* Delete temporary storage file that has been used in
      * download mode to read session data. This data was
      * previously stored in run mode when download request
-     * was received. 
+     * was received.
      *
      * Do not delete this file if there is a local transfer
-     * request in progress. 
+     * request in progress.
      */
-    if ( localRequest == FALSE ) 
-    {    
+    if ( localRequest == FALSE )
+    {
         if (dleds_storageFileExists() == DLEDS_OK)
         {
-            /* 
+            /*
              * Delete temporary storage file,
              * should only exist in DOWNLOAD operation mode
              * when there is a download transfer in progress
@@ -3954,14 +3969,14 @@ void dleds_resetToRunMode(void)
     /* Temporary delay for test purpose */
     /* read delay value in seconds from file dledsDelay.txt */
     fp = fopen(DLEDS_DELAY_FILE_NAME, "r" );
-    if (fp == NULL)  
+    if (fp == NULL)
     {
         DebugError1("Failed to open DLEDS delay file or file does not exist (%s)",
             DLEDS_DELAY_FILE_NAME);
     }
     else
     {
-        fscanf(fp,"%u", &delayValue); 
+        fscanf(fp,"%u", &delayValue);
         fclose(fp);
     }
 
@@ -3974,12 +3989,14 @@ void dleds_resetToRunMode(void)
     }
 
     DebugError1("DLEDS delay before reset, Delay= %d seconds", delayValue);
+    /*
     if (delayValue > 0)
     {
         IPTVosTaskDelay(delayValue * 1000);
     }
+    */
 
-    
+
     result = dleds_forced_reboot(DLEDS_OSRUN_MODE);
     if (result == DLEDS_ERROR)
     {
@@ -3994,7 +4011,7 @@ void dleds_resetToDownloadMode(void)
     UINT32      delayValue = 6;
 
     DebugError1("DLEDS delay before reset, Delay= %d seconds", delayValue);
-    IPTVosTaskDelay(delayValue * 1000);
+    //IPTVosTaskDelay(delayValue * 1000);
 
 
     result = dleds_forced_reboot(DLEDS_OSDOWNLOAD_MODE);

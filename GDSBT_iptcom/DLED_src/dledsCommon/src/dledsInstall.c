@@ -295,6 +295,7 @@ static DLEDS_RESULT unpackTarFile(
     /******************************************************************************
     Unpack TAR file to destination directory
     ******************************************************************************/
+    char cmd[256];
     result = dledsPlatformUnpackTarFile(fileName, destinationDir, compressed);
     DebugError3("***PLATFORM: TAR file(%s) unpacked in directory (%s), result (%d)", fileName, destinationDir, result);
 
@@ -3181,7 +3182,7 @@ DLEDS_RESULT  dledsInstallEDSP2Package(
                 result = dledsCleanupEDSP2(edspName);
                 if (result != DLEDS_OK)
                 {
-                    DebugError1("Cleanup failed for EDSP (%s)", edspName);
+                    DebugError1("Failing Cleanup failed for EDSP (%s)", edspName);
                 }
                 result = DLEDS_INSTALLATION_ERROR;
             }

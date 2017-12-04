@@ -40,6 +40,7 @@
 /* Define DLEDS root directory */
 #define FILE_SYSTEM_NAME                "/"
 #define DLEDS_ROOT_DIRECTORY            "/tmp/dleds"
+//#define DLEDS_TEMP_DIRECTORY            "/tmp/dleds"
 
 /* Files used by DLEDS */
 #define DLEDS_XML_TMP_FILE              "/tmp/dleds/tempXmlFile.xml"
@@ -88,7 +89,7 @@
 
 
 
-#define RESULTBASH_SIZESTRING                  255
+#define RESULTBASH_SIZESTRING                  2048
 /*****************************************************************************
 *   ADD CODE FOR PLATFORM (END)
 ******************************************************************************/
