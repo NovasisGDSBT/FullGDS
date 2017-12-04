@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<system2 version="1" release="1" update="0" evolution="0">
+<edPackage>
+	<name>Display</name>
+	<version>1.0.0.0</version>
+	<source>SU</source>
+	<sci>
+	    <name>DisplayData</name>
+	    <version>1.3.0.0</version>
+	    <component>
+	      <name>runtime</name>
+	      <version>1.3.0.0</version>
+	    </component>
+	</sci>
+    </edPackage>
+</system2>

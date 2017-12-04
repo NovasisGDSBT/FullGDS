@@ -1,0 +1,35 @@
+<unit2 version="1" release="0" update="0" evolution="0" >
+	<unit_type>HMI500</unit_type>
+	<manufacturer>CC-Systems</manufacturer>
+	<article_number>3EST000214-8800</article_number>
+	<production_date>2008-06-17</production_date>
+	<delivery_revision>1</delivery_revision>
+	<present_revision>1</present_revision>
+	<rev_date>2000-01-01</rev_date>
+	<serial_number>B40-yyww00027</serial_number>
+	<eth_addresses>
+		<eth_address>00-50-C2-67-AD-5A</eth_address>
+	</eth_addresses>
+	<boards>
+		<board>
+			<board_type>XXX</board_type>
+			<manufacturer>Novasis</manufacturer>
+			<article_number>1234</article_number>
+			<production_date>2000-01-01</production_date>
+			<delivery_revision>1</delivery_revision>
+			<present_revision>1</present_revision>
+			<rev_date>2000-01-01</rev_date>
+			<serial_number>B40-yyww00027</serial_number>
+		</board>
+		<board>
+			<board_type>YYY</board_type>
+			<manufacturer>Novasis</manufacturer>
+			<article_number>1234</article_number>
+			<production_date>2000-01-01</production_date>
+			<delivery_revision>1</delivery_revision>
+			<present_revision>1</present_revision>
+			<rev_date>2000-01-01</rev_date>
+			<serial_number>B40-yyww00027</serial_number>
+		</board>
+	</boards>
+</unit2>
