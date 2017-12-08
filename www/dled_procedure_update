@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# $1= download fold , $2 = file name
+
+cd $1
+tar -xvf $2
+if [ $? -eq 0 ]  # test tar
+then
+    foldername=$(basename $2 .tar)
+    rm -rf $foldername
+    rm -rf /tmp/dledProc_mountpoint
+    mkdir /tmp/dledProc_mountpoint
+    mount /dev/mmcblk0p3 /tmp/dledProc_mountpoint
+    if [ $? -eq 0 ]  # test mount OK
+    then
+	  sync
+	  rm -rf /tmp/dledProc_mountpoint/application_storage
+	  mkdir  /tmp/dledProc_mountpoint/application_storage
+	  cp $2  /tmp/dledProc_mountpoint/application_storage/.
+	  cp /tmp/www/AutoRun.sh /tmp/dledProc_mountpoint/application_storage/.
+	  umount /tmp/dledProc_mountpoint
+	  
+	  sync
+	  e2fsck /dev/mmcblk0p3
+	  /tmp/www/logwrite.sh "APPA" "INFO" "$0"  "$2 loaded into /dev/mmcblk0p3"
+    else
+
+	  /tmp/www/logwrite.sh "APPA" "ERROR" "$0"  "$2 not loaded into flash"
+    fi
+else
+/tmp/www/logwrite.sh "APPA" "ERROR" "$0"  "$2 file test failed"
+
+fi
+
+
+
+
